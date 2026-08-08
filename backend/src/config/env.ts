@@ -29,7 +29,8 @@ if (!parsed.success) {
   process.exit(1);
 }
 
-export const env = parsed.data;
+type Env = z.infer<typeof envSchema>;
+export const env: Env = parsed.data;
 
 export const isProduction = env.NODE_ENV === "production";
 export const isDevelopment = env.NODE_ENV === "development";

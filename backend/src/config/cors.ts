@@ -4,7 +4,10 @@ import { env, isProduction } from "../config/env";
 const allowedOrigins = env.CORS_ORIGIN.split(",").map((o) => o.trim());
 
 export const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void,
+  ) => {
     if (!origin) {
       callback(null, !isProduction);
       return;

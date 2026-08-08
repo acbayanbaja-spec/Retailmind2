@@ -388,7 +388,7 @@ Query params: `page`, `limit`, optional `search`, `isActive`, `role`.
 ### Backend — Render
 
 1. Use `render.yaml` or create a Web Service manually
-2. Build command: `cd backend && npm ci && npm run build && npx prisma migrate deploy`
+2. Build command: `cd backend && npm ci --include=dev && npm run build && npx prisma migrate deploy`
 3. Start command: `cd backend && npm start`
 4. Health check path: `/api/health` (returns 503 if database is unreachable in production)
 5. Configure all environment variables from `backend/.env.example`
