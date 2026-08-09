@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: cd backend && npm ci --include=dev && npm run build && npx prisma migrate deploy
+    buildCommand: cd backend && npm ci --include=dev && npm run build && npx prisma migrate deploy && npm run db:seed:prod
     startCommand: cd backend && npm start
     healthCheckPath: /api/health
     envVars:
@@ -24,8 +24,10 @@ services:
         value: 15m
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
+      - key: ADMIN_PASSWORD
+        generateValue: true
       - key: CORS_ORIGIN
-        sync: false
+        value: https://retailmind2-8d9g.vercel.app
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
