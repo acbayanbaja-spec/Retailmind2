@@ -17,6 +17,90 @@ const prisma = new PrismaClient();
 const DEV_PASSWORD = "DevPassword123!";
 const DEV_PASSWORD_LABEL = "DEVELOPMENT ONLY — change before production";
 
+// Helper arrays for generating realistic data
+const firstNames = [
+  "Juan", "Maria", "Jose", "Ana", "Carlos", "Elena", "Miguel", "Sofia", "Antonio", "Isabella",
+  "Francisco", "Carmen", "Luis", "Laura", "Javier", "Patricia", "Diego", "Valentina", "Pedro", "Daniela",
+  "Rafael", "Gabriela", "Manuel", "Andrea", "Alejandro", "Natalia", "Fernando", "Monica", "Ricardo", "Victoria",
+  "Sergio", "Claudia", "Andres", "Paula", "Julio", "Veronica", "Alberto", "Sandra", "Roberto", "Elena",
+  "Ramon", "Beatriz", "Daniel", "Carolina", "Adrian", "Marina", "Jorge", "Luisa", "Oscar", "Teresa",
+  "Edgar", "Alicia", "Victor", "Cristina", "Raul", "Silvia", "Ernesto", "Eva", "Samuel", "Lorena",
+  "Benjamin", "Rosa", "Nicolas", "Angela", "Julian", "Diana", "Leonardo", "Sara", "Maximiliano", "Camila",
+  "Sebastian", "Valeria", "Tomas", "Lucia", "Martin", "Ana", "Bruno", "Sofia", "Iker", "Marta",
+  "Dylan", "Julia", "Thiago", "Carla", "Leo", "Ines", "Ian", "Clara", "Noah", "Adriana"
+];
+
+const lastNames = [
+  "Garcia", "Rodriguez", "Martinez", "Lopez", "Gonzalez", "Perez", "Sanchez", "Ramirez", "Cruz", "Flores",
+  "Torres", "Rivera", "Morales", "Reyes", "Jimenez", "Mendoza", "Castillo", "Ramos", "Ortiz", "Delgado",
+  "Vargas", "Castro", "Silva", "Mendoza", "Paredes", "Cortez", "Santos", "Vega", "Rojas", "Mendoza",
+  "Herrera", "Luna", "Guzman", "Rios", "Fernandez", "Medina", "Diaz", "Palacios", "Navarro", "Romero",
+  "Velasquez", "Cabrera", "Soto", "Mendoza", "Peralta", "Gomez", "Solis", "Benitez", "Molina", "Castillo",
+  "Quintero", "Menendez", "Cervantes", "Salazar", "Villanueva", "Pacheco", "Bautista", "Mercado", "Valdez", "Lara",
+  "Dominguez", "Aguilar", "Pena", "Ibarra", "Cantu", "Galindo", "Reyes", "Mendoza", "Serrano", "Quiroz",
+  "Macias", "Gonzalez", "Pimentel", "Trevino", "Zuniga", "Valenzuela", "Delacruz", "Mejia", "Luna", "Esparza"
+];
+
+const cities = [
+  "Manila", "Quezon City", "Caloocan", "Makati", "Pasig", "Taguig", "Parañaque", "Las Piñas", "Muntinlupa", "Marikina",
+  "Valenzuela", "Malabon", "Navotas", "San Juan", "Mandaluyong", "Pasay", "Cebu City", "Davao City", "Baguio City", "Iloilo City",
+  "Zamboanga City", "Antipolo", "Cagayan de Oro", "General Santos", "Bacolod", "Angeles City", "Batangas City", "Dagupan", "Lipa City", "Legazpi"
+];
+
+const streets = [
+  "Rizal Avenue", "Mabini Street", "Bonifacio Street", "Luna Street", "Magsaysay Avenue", "Quezon Street", "Aquino Street",
+  "Santos Street", "Reyes Street", "Garcia Street", "Cruz Street", "Mendoza Street", "Ramos Street", "Flores Street",
+  "Del Rosario Street", "Castillo Street", "Villanueva Street", "Santos Street", "Mercado Street", "Valdez Street",
+  "Lara Street", "Dominguez Street", "Aguilar Street", "Peña Street", "Ibarra Street", "Cantu Street", "Galindo Street"
+];
+
+const supplierNames = [
+  "Metro Wholesale Supply", "Pacific Goods Trading", "Luzon Distributors Inc", "Visayas Trading Co", "Mindanao Suppliers",
+  "National Food Corp", "Philippine Products Inc", "Asian Wholesale Solutions", "Global Import Export", "Regional Distribution",
+  "Manila Trading Post", "Cebu Commercial Hub", "Davao Business Supply", "Baguio Market Distributors", "Iloilo Trading Partners",
+  "Zamboanga Wholesale Co", "Antipolo Suppliers Inc", "Cagayan de Oro Trading", "General Santos Distribution", "Bacolod Business Partners",
+  "Angeles City Supply Co", "Batangas Commercial Inc", "Dagupan Trading House", "Lipa City Distributors", "Legazpi Business Solutions",
+  "Premium Goods Corp", "Elite Trading Partners", "Superior Supply Chain", "Prime Distribution Inc", "Master Wholesalers Co",
+  "Quality Products Inc", "Standard Trading Solutions", "Central Distribution Hub", "Universal Supply Partners", "Global Wholesale Network",
+  "Pacific Rim Trading", "Asian Market Solutions", "International Business Partners", "World Wide Distributors", "Global Supply Chain Inc",
+  "Philippine Trading Corp", "National Business Solutions", "Regional Wholesale Partners", "Local Distribution Co", "Community Supply Hub",
+  "Metro Manila Trading", "Luzon Business Partners", "Visayas Commercial Inc", "Mindanao Wholesale Solutions", "National Distribution Network"
+];
+
+const contactPersons = [
+  "Roberto Cruz", "Lisa Tan", "Miguel Santos", "Ana Garcia", "Carlos Mendoza", "Elena Rodriguez", "Jose Martinez", "Maria Lopez",
+  "Juan Gonzalez", "Carmen Perez", "Antonio Sanchez", "Patricia Ramirez", "Francisco Cruz", "Sofia Flores", "Luis Torres", "Laura Rivera",
+  "Javier Morales", "Monica Reyes", "Diego Jimenez", "Valentina Mendoza", "Pedro Castillo", "Daniela Ramos", "Rafael Ortiz", "Gabriela Delgado",
+  "Manuel Vargas", "Andrea Castro", "Alejandro Silva", "Natalia Paredes", "Fernando Cortez", "Sandra Santos", "Sergio Vega", "Claudia Rojas",
+  "Andres Morales", "Paula Herrera", "Julio Luna", "Veronica Guzman", "Alberto Rios", "Sandra Fernandez", "Roberto Medina", "Elena Diaz",
+  "Ramon Palacios", "Beatriz Navarro", "Daniel Romero", "Carolina Velasquez", "Adrian Cabrera", "Marina Soto", "Jorge Mendoza", "Luisa Peralta",
+  "Oscar Gomez", "Teresa Solis", "Edgar Benitez", "Alicia Molina", "Victor Castillo", "Cristina Quintero", "Raul Menendez", "Silvia Cervantes",
+  "Ernesto Salazar", "Eva Villanueva", "Samuel Pacheco", "Lorena Bautista", "Benjamin Mercado", "Rosa Valdez", "Nicolas Lara", "Angela Dominguez",
+  "Julian Aguilar", "Diana Peña", "Leonardo Ibarra", "Sara Cantu", "Maximiliano Galindo", "Camila Reyes", "Sebastian Mendoza", "Valeria Serrano",
+  "Tomas Quiroz", "Lucia Macias", "Martin Gonzalez", "Ana Pimentel", "Bruno Trevino", "Sofia Zuniga", "Iker Valenzuela", "Marta Delacruz",
+  "Dylan Mejia", "Julia Luna", "Thiago Esparza", "Carla Reyes", "Leo Mendoza", "Ines Santos", "Ian Garcia", "Clara Rodriguez", "Noah Martinez", "Adriana Lopez"
+];
+
+function getRandomItem<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function getRandomPhone(): string {
+  return `+63 9${Math.floor(Math.random() * 9) + 1} ${Math.floor(Math.random() * 900) + 100} ${Math.floor(Math.random() * 9000) + 1000}`;
+}
+
+function getRandomEmail(firstName: string, lastName: string): string {
+  const domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "email.com"];
+  const domain = getRandomItem(domains);
+  return `${firstName.toLowerCase()}.${lastName.toLowerCase()}${Math.floor(Math.random() * 100)}@${domain}`;
+}
+
+function getRandomAddress(): string {
+  const street = getRandomItem(streets);
+  const number = Math.floor(Math.random() * 999) + 1;
+  return `${number} ${street}`;
+}
+
 async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
 }
@@ -158,47 +242,61 @@ async function main() {
   );
 
   // ─── Suppliers ───────────────────────────────────────────────────────────
-  const suppliers = await Promise.all([
-    prisma.supplier.upsert({
-      where: { id: "00000000-0000-4000-8000-000000000001" },
+  const suppliers = [];
+  
+  // Generate 100 suppliers
+  for (let i = 0; i < 100; i++) {
+    const name = getRandomItem(supplierNames);
+    const contactPerson = getRandomItem(contactPersons);
+    const email = `contact${i}@${name.toLowerCase().replace(/\s+/g, '')}.dev`;
+    const phone = `+63 2 ${Math.floor(Math.random() * 9000) + 1000} ${Math.floor(Math.random() * 9000) + 1000}`;
+    const address = getRandomAddress();
+    const city = getRandomItem(cities);
+    
+    const supplier = await prisma.supplier.upsert({
+      where: { id: `00000000-0000-4000-8000-${String(i).padStart(12, '0')}` },
       update: {},
       create: {
-        id: "00000000-0000-4000-8000-000000000001",
-        name: "Metro Wholesale Supply",
-        contactPerson: "Roberto Cruz",
-        email: "orders@metrowholesale.dev",
-        phone: "+63 2 8888 1001",
-        address: "123 Industrial Ave",
-        city: "Quezon City",
+        id: `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`,
+        name,
+        contactPerson,
+        email,
+        phone,
+        address,
+        city,
       },
-    }),
-    prisma.supplier.upsert({
-      where: { id: "00000000-0000-4000-8000-000000000002" },
-      update: {},
-      create: {
-        id: "00000000-0000-4000-8000-000000000002",
-        name: "Pacific Goods Trading",
-        contactPerson: "Lisa Tan",
-        email: "sales@pacificgoods.dev",
-        phone: "+63 2 8888 1002",
-        address: "456 Commerce St",
-        city: "Makati",
-      },
-    }),
-  ]);
+    });
+    
+    suppliers.push(supplier);
+  }
 
   // ─── Products ────────────────────────────────────────────────────────────
   const productDefs = [
     { sku: "BEV-001", barcode: "4800123456001", name: "Bottled Water 500ml", category: 0, brand: 0, supplier: 0, cost: 8, price: 15, stock: 200, min: 50 },
     { sku: "BEV-002", barcode: "4800123456002", name: "Energy Drink 250ml", category: 0, brand: 2, supplier: 0, cost: 25, price: 45, stock: 80, min: 20 },
-    { sku: "SNK-001", barcode: "4800123456003", name: "Potato Chips 150g", category: 1, brand: 0, supplier: 1, cost: 35, price: 55, stock: 120, min: 30 },
-    { sku: "SNK-002", barcode: "4800123456004", name: "Chocolate Bar 40g", category: 1, brand: 0, supplier: 1, cost: 18, price: 30, stock: 150, min: 40 },
-    { sku: "PC-001", barcode: "4800123456005", name: "Shampoo 180ml", category: 2, brand: 1, supplier: 0, cost: 65, price: 99, stock: 60, min: 15 },
-    { sku: "PC-002", barcode: "4800123456006", name: "Toothpaste 150g", category: 2, brand: 3, supplier: 0, cost: 45, price: 75, stock: 90, min: 25 },
-    { sku: "HH-001", barcode: "4800123456007", name: "Dish Soap 500ml", category: 3, brand: 1, supplier: 1, cost: 55, price: 85, stock: 45, min: 15 },
-    { sku: "HH-002", barcode: "4800123456008", name: "Laundry Detergent 1kg", category: 3, brand: 3, supplier: 1, cost: 120, price: 175, stock: 35, min: 10 },
-    { sku: "ELC-001", barcode: "4800123456009", name: "USB-C Cable 1m", category: 4, brand: 4, supplier: 0, cost: 80, price: 149, stock: 25, min: 8 },
-    { sku: "ELC-002", barcode: "4800123456010", name: "Wireless Earbuds", category: 4, brand: 4, supplier: 0, cost: 450, price: 799, stock: 12, min: 5 },
+    { sku: "BEV-003", barcode: "4800123456003", name: "Soda 330ml", category: 0, brand: 0, supplier: 1, cost: 12, price: 22, stock: 150, min: 40 },
+    { sku: "BEV-004", barcode: "4800123456004", name: "Iced Tea 500ml", category: 0, brand: 2, supplier: 0, cost: 18, price: 32, stock: 100, min: 25 },
+    { sku: "BEV-005", barcode: "4800123456005", name: "Orange Juice 1L", category: 0, brand: 0, supplier: 1, cost: 35, price: 65, stock: 60, min: 15 },
+    { sku: "SNK-001", barcode: "4800123456006", name: "Potato Chips 150g", category: 1, brand: 0, supplier: 1, cost: 35, price: 55, stock: 120, min: 30 },
+    { sku: "SNK-002", barcode: "4800123456007", name: "Chocolate Bar 40g", category: 1, brand: 0, supplier: 1, cost: 18, price: 30, stock: 150, min: 40 },
+    { sku: "SNK-003", barcode: "4800123456008", name: "Cookies 200g", category: 1, brand: 0, supplier: 0, cost: 25, price: 45, stock: 90, min: 25 },
+    { sku: "SNK-004", barcode: "4800123456009", name: "Crackers 100g", category: 1, brand: 2, supplier: 1, cost: 15, price: 28, stock: 110, min: 30 },
+    { sku: "SNK-005", barcode: "4800123456010", name: "Candy Pack 50g", category: 1, brand: 0, supplier: 0, cost: 12, price: 22, stock: 200, min: 50 },
+    { sku: "PC-001", barcode: "4800123456011", name: "Shampoo 180ml", category: 2, brand: 1, supplier: 0, cost: 65, price: 99, stock: 60, min: 15 },
+    { sku: "PC-002", barcode: "4800123456012", name: "Toothpaste 150g", category: 2, brand: 3, supplier: 0, cost: 45, price: 75, stock: 90, min: 25 },
+    { sku: "PC-003", barcode: "4800123456013", name: "Soap Bar 90g", category: 2, brand: 1, supplier: 1, cost: 25, price: 45, stock: 150, min: 40 },
+    { sku: "PC-004", barcode: "4800123456014", name: "Lotion 200ml", category: 2, brand: 3, supplier: 0, cost: 85, price: 145, stock: 70, min: 18 },
+    { sku: "PC-005", barcode: "4800123456015", name: "Deodorant 50ml", category: 2, brand: 1, supplier: 1, cost: 55, price: 95, stock: 80, min: 20 },
+    { sku: "HH-001", barcode: "4800123456016", name: "Dish Soap 500ml", category: 3, brand: 1, supplier: 1, cost: 55, price: 85, stock: 45, min: 15 },
+    { sku: "HH-002", barcode: "4800123456017", name: "Laundry Detergent 1kg", category: 3, brand: 3, supplier: 1, cost: 120, price: 175, stock: 35, min: 10 },
+    { sku: "HH-003", barcode: "4800123456018", name: "Bleach 1L", category: 3, brand: 1, supplier: 0, cost: 35, price: 65, stock: 60, min: 15 },
+    { sku: "HH-004", barcode: "4800123456019", name: "Toilet Cleaner 750ml", category: 3, brand: 3, supplier: 1, cost: 45, price: 85, stock: 50, min: 12 },
+    { sku: "HH-005", barcode: "4800123456020", name: "Glass Cleaner 500ml", category: 3, brand: 1, supplier: 0, cost: 40, price: 75, stock: 55, min: 14 },
+    { sku: "ELC-001", barcode: "4800123456021", name: "USB-C Cable 1m", category: 4, brand: 4, supplier: 0, cost: 80, price: 149, stock: 25, min: 8 },
+    { sku: "ELC-002", barcode: "4800123456022", name: "Wireless Earbuds", category: 4, brand: 4, supplier: 0, cost: 450, price: 799, stock: 12, min: 5 },
+    { sku: "ELC-003", barcode: "4800123456023", name: "Phone Case", category: 4, brand: 4, supplier: 1, cost: 65, price: 125, stock: 40, min: 10 },
+    { sku: "ELC-004", barcode: "4800123456024", name: "Screen Protector", category: 4, brand: 4, supplier: 0, cost: 25, price: 55, stock: 80, min: 20 },
+    { sku: "ELC-005", barcode: "4800123456025", name: "Charging Cable 2m", category: 4, brand: 4, supplier: 1, cost: 45, price: 89, stock: 35, min: 10 },
   ];
 
   const products = [];
@@ -237,12 +335,59 @@ async function main() {
   }
 
   // ─── Customers ───────────────────────────────────────────────────────────
-  const customerDefs = [
-    { firstName: "Ana", lastName: "Garcia", email: "ana.garcia@email.dev", phone: "+63 918 111 0001", level: MembershipLevel.GOLD, points: 850 },
-    { firstName: "Carlos", lastName: "Mendoza", email: "carlos.mendoza@email.dev", phone: "+63 918 111 0002", level: MembershipLevel.SILVER, points: 420 },
-    { firstName: "Elena", lastName: "Torres", email: "elena.torres@email.dev", phone: "+63 918 111 0003", level: MembershipLevel.BRONZE, points: 150 },
-    { firstName: "Walk-in", lastName: "Customer", email: null, phone: null, level: MembershipLevel.BRONZE, points: 0 },
-  ];
+  const customerDefs = [];
+  
+  // Generate 100 customers
+  for (let i = 0; i < 100; i++) {
+    const firstName = getRandomItem(firstNames);
+    const lastName = getRandomItem(lastNames);
+    const email = getRandomEmail(firstName, lastName);
+    const phone = getRandomPhone();
+    const city = getRandomItem(cities);
+    const address = getRandomAddress();
+    
+    // Random membership level with weighted distribution
+    const membershipRand = Math.random();
+    let level: MembershipLevel;
+    let points: number;
+    
+    if (membershipRand < 0.1) {
+      level = MembershipLevel.PLATINUM;
+      points = Math.floor(Math.random() * 2000) + 1000;
+    } else if (membershipRand < 0.3) {
+      level = MembershipLevel.GOLD;
+      points = Math.floor(Math.random() * 800) + 500;
+    } else if (membershipRand < 0.6) {
+      level = MembershipLevel.SILVER;
+      points = Math.floor(Math.random() * 400) + 200;
+    } else {
+      level = MembershipLevel.BRONZE;
+      points = Math.floor(Math.random() * 150) + 50;
+    }
+    
+    customerDefs.push({
+      firstName,
+      lastName,
+      email,
+      phone,
+      address,
+      city,
+      level,
+      points
+    });
+  }
+  
+  // Add a walk-in customer
+  customerDefs.push({
+    firstName: "Walk-in",
+    lastName: "Customer",
+    email: null,
+    phone: null,
+    address: null,
+    city: null,
+    level: MembershipLevel.BRONZE,
+    points: 0
+  });
 
   const customers = [];
   for (const c of customerDefs) {
@@ -255,6 +400,8 @@ async function main() {
             lastName: c.lastName,
             email: c.email,
             phone: c.phone,
+            address: c.address,
+            city: c.city,
             totalSpent: 0,
           },
         })
@@ -281,7 +428,7 @@ async function main() {
 
   // ─── Expense Categories & Expenses ───────────────────────────────────────
   const expenseCategories = await Promise.all(
-    ["Rent", "Utilities", "Salaries", "Supplies", "Marketing"].map((name) =>
+    ["Rent", "Utilities", "Salaries", "Supplies", "Marketing", "Insurance", "Maintenance", "Delivery", "Software", "Training"].map((name) =>
       prisma.expenseCategory.upsert({
         where: { name },
         update: {},
@@ -291,14 +438,21 @@ async function main() {
   );
 
   const now = new Date();
-  await prisma.expense.createMany({
-    data: [
-      { categoryId: expenseCategories[0].id, title: "Monthly Store Rent", amount: 45000, expenseDate: new Date(now.getFullYear(), now.getMonth(), 1), recurrence: ExpenseRecurrence.MONTHLY, createdById: admin.id },
-      { categoryId: expenseCategories[1].id, title: "Electricity Bill", amount: 8500, expenseDate: new Date(now.getFullYear(), now.getMonth(), 5), recurrence: ExpenseRecurrence.MONTHLY, createdById: manager.id },
-      { categoryId: expenseCategories[2].id, title: "Staff Salaries", amount: 120000, expenseDate: new Date(now.getFullYear(), now.getMonth(), 15), recurrence: ExpenseRecurrence.MONTHLY, createdById: admin.id },
-      { categoryId: expenseCategories[3].id, title: "Cleaning Supplies", amount: 2500, expenseDate: new Date(now.getFullYear(), now.getMonth(), 10), recurrence: ExpenseRecurrence.NONE, createdById: manager.id },
-      { categoryId: expenseCategories[4].id, title: "Social Media Ads", amount: 5000, expenseDate: new Date(now.getFullYear(), now.getMonth(), 20), recurrence: ExpenseRecurrence.NONE, createdById: admin.id },
-    ],
+  const expenseData = [
+    { categoryId: expenseCategories[0].id, title: "Monthly Store Rent", amount: 45000, expenseDate: new Date(now.getFullYear(), now.getMonth(), 1), recurrence: ExpenseRecurrence.MONTHLY, createdById: admin.id },
+    { categoryId: expenseCategories[1].id, title: "Electricity Bill", amount: 8500, expenseDate: new Date(now.getFullYear(), now.getMonth(), 5), recurrence: ExpenseRecurrence.MONTHLY, createdById: manager.id },
+    { categoryId: expenseCategories[2].id, title: "Staff Salaries", amount: 120000, expenseDate: new Date(now.getFullYear(), now.getMonth(), 15), recurrence: ExpenseRecurrence.MONTHLY, createdById: admin.id },
+    { categoryId: expenseCategories[3].id, title: "Cleaning Supplies", amount: 2500, expenseDate: new Date(now.getFullYear(), now.getMonth(), 10), recurrence: ExpenseRecurrence.NONE, createdById: manager.id },
+    { categoryId: expenseCategories[4].id, title: "Social Media Ads", amount: 5000, expenseDate: new Date(now.getFullYear(), now.getMonth(), 20), recurrence: ExpenseRecurrence.NONE, createdById: admin.id },
+    { categoryId: expenseCategories[5].id, title: "Business Insurance", amount: 15000, expenseDate: new Date(now.getFullYear(), now.getMonth(), 1), recurrence: ExpenseRecurrence.YEARLY, createdById: admin.id },
+    { categoryId: expenseCategories[6].id, title: "AC Maintenance", amount: 3500, expenseDate: new Date(now.getFullYear(), now.getMonth(), 15), recurrence: ExpenseRecurrence.MONTHLY, createdById: manager.id },
+    { categoryId: expenseCategories[7].id, title: "Delivery Services", amount: 4200, expenseDate: new Date(now.getFullYear(), now.getMonth(), 25), recurrence: ExpenseRecurrence.MONTHLY, createdById: manager.id },
+    { categoryId: expenseCategories[8].id, title: "Software Licenses", amount: 2800, expenseDate: new Date(now.getFullYear(), now.getMonth(), 12), recurrence: ExpenseRecurrence.MONTHLY, createdById: admin.id },
+    { categoryId: expenseCategories[9].id, title: "Staff Training", amount: 8000, expenseDate: new Date(now.getFullYear(), now.getMonth(), 28), recurrence: ExpenseRecurrence.NONE, createdById: manager.id },
+  ];
+  
+  const createdExpenses = await prisma.expense.createMany({
+    data: expenseData,
     skipDuplicates: true,
   });
 
@@ -307,14 +461,14 @@ async function main() {
   let saleCounter = 1;
 
   for (let dayOffset = 29; dayOffset >= 0; dayOffset--) {
-    const salesPerDay = Math.floor(Math.random() * 4) + 2;
+    const salesPerDay = Math.floor(Math.random() * 8) + 5; // Increased to 5-12 sales per day
 
     for (let s = 0; s < salesPerDay; s++) {
       const saleDate = new Date(now);
       saleDate.setDate(saleDate.getDate() - dayOffset);
       saleDate.setHours(9 + Math.floor(Math.random() * 10), Math.floor(Math.random() * 60));
 
-      const itemCount = Math.floor(Math.random() * 3) + 1;
+      const itemCount = Math.floor(Math.random() * 4) + 1; // Increased to 1-4 items per sale
       const saleItems = [];
       let subtotal = 0;
 
@@ -377,29 +531,40 @@ async function main() {
     }
   }
 
-  // ─── Purchase Order ──────────────────────────────────────────────────────
-  const poNumber = "PO-2026-0001";
-  const existingPo = await prisma.purchaseOrder.findUnique({ where: { orderNumber: poNumber } });
+  // ─── Purchase Orders ──────────────────────────────────────────────────────
+  const poNumbers = ["PO-2026-0001", "PO-2026-0002", "PO-2026-0003", "PO-2026-0004", "PO-2026-0005"];
+  let createdPOs = 0;
+  
+  for (let poIndex = 0; poIndex < poNumbers.length; poIndex++) {
+    const poNumber = poNumbers[poIndex];
+    const existingPo = await prisma.purchaseOrder.findUnique({ where: { orderNumber: poNumber } });
 
-  if (!existingPo) {
-    const poItems = products.slice(0, 4).map((p) => ({
-      productId: p.id,
-      quantity: 50,
-      unitCost: Number(p.costPrice),
-      totalCost: Number(p.costPrice) * 50,
-    }));
+    if (!existingPo) {
+      const poItems = products.slice(poIndex * 5, (poIndex + 1) * 5).map((p) => {
+        const quantity = Math.floor(Math.random() * 50) + 20;
+        return {
+          productId: p.id,
+          quantity,
+          unitCost: Number(p.costPrice),
+          totalCost: Number(p.costPrice) * quantity,
+        };
+      });
 
-    await prisma.purchaseOrder.create({
-      data: {
-        orderNumber: poNumber,
-        supplierId: suppliers[0].id,
-        status: PurchaseOrderStatus.APPROVED,
-        totalAmount: poItems.reduce((sum, i) => sum + i.totalCost, 0),
-        notes: "Restock order for fast-moving items",
-        createdById: manager.id,
-        items: { create: poItems },
-      },
-    });
+      const statuses = [PurchaseOrderStatus.APPROVED, PurchaseOrderStatus.RECEIVED, PurchaseOrderStatus.PENDING, PurchaseOrderStatus.ORDERED, PurchaseOrderStatus.PARTIALLY_RECEIVED];
+      
+      await prisma.purchaseOrder.create({
+        data: {
+          orderNumber: poNumber,
+          supplierId: suppliers[poIndex % suppliers.length].id,
+          status: statuses[poIndex],
+          totalAmount: poItems.reduce((sum, i) => sum + i.totalCost, 0),
+          notes: `Restock order for products ${poIndex * 5 + 1}-${(poIndex + 1) * 5}`,
+          createdById: manager.id,
+          items: { create: poItems },
+        },
+      });
+      createdPOs++;
+    }
   }
 
   // ─── Settings ────────────────────────────────────────────────────────────
@@ -438,10 +603,19 @@ async function main() {
   console.log(`  Admin:   admin@retailmind.dev`);
   console.log(`  Manager: manager@retailmind.dev`);
   console.log(`  Cashier: cashier@retailmind.dev\n`);
+  console.log("─── SEED DATA SUMMARY ───");
+  console.log(`Users: 3 (Admin, Manager, Cashier)`);
+  console.log(`Roles: 3 (Administrator, Store Manager, Cashier)`);
+  console.log(`Permissions: ${allPermissionIds.length}`);
+  console.log(`Categories: ${categories.length}`);
+  console.log(`Brands: ${brands.length}`);
+  console.log(`Suppliers: ${suppliers.length}`);
   console.log(`Products: ${products.length}`);
   console.log(`Customers: ${customers.length}`);
+  console.log(`Expense Categories: ${expenseCategories.length}`);
+  console.log(`Expenses: ${createdExpenses.count}`);
   console.log(`Sales: ~${saleCounter - 1} (last 30 days)`);
-  console.log(`Permissions: ${allPermissionIds.length}`);
+  console.log(`Purchase Orders: ${createdPOs} sample orders\n`);
 }
 
 main()
