@@ -11,7 +11,7 @@ import {
 const router = Router();
 
 router.use(authenticate);
-router.use(requirePermission("products.manage"));
+router.use(requirePermission("customers.manage"));
 
 router.get("/", validateQuery(listCustomersQuerySchema), customerController.list);
 router.get("/:id", customerController.getById);

@@ -46,6 +46,7 @@ async function main() {
     { name: "users.manage", module: "users", action: "manage", description: "Manage users" },
     { name: "products.manage", module: "products", action: "manage", description: "Manage products" },
     { name: "inventory.manage", module: "inventory", action: "manage", description: "Manage inventory" },
+    { name: "customers.manage", module: "customers", action: "manage", description: "Manage customers" },
     { name: "sales.create", module: "sales", action: "create", description: "Process sales" },
     { name: "sales.refund", module: "sales", action: "refund", description: "Process refunds" },
     { name: "reports.view", module: "reports", action: "view", description: "View reports" },
@@ -69,6 +70,7 @@ async function main() {
   const managerPermissionNames = [
     "products.manage",
     "inventory.manage",
+    "customers.manage",
     "sales.create",
     "sales.refund",
     "reports.view",
