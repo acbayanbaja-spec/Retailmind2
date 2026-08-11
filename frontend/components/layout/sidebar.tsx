@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import { APP_NAME } from "@/lib/constants/colors";
 import { filterNavByRole, NAV_ITEMS } from "@/lib/constants/navigation";
 import { cn } from "@/lib/utils";
@@ -71,30 +70,6 @@ export function Sidebar() {
           })}
         </ul>
       </nav>
-
-      {/* Upgrade card */}
-      <div className="p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="rounded-2xl bg-white/15 p-4 backdrop-blur-sm"
-        >
-          <div className="mb-2 flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-accent-yellow" />
-            <p className="text-xs font-semibold text-white/90">Pro Features</p>
-          </div>
-          <p className="text-xs leading-relaxed text-white/70">
-            Upgrade your account to unlock AI analytics and advanced reports.
-          </p>
-          <button
-            type="button"
-            className="mt-3 w-full rounded-xl bg-white px-3 py-2 text-xs font-semibold text-primary transition-all hover:bg-white/90 hover:shadow-md active:scale-95"
-          >
-            Upgrade
-          </button>
-        </motion.div>
-      </div>
 
       {/* User footer */}
       <div className="border-t border-white/10 p-4">
