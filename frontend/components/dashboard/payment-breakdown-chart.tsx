@@ -12,7 +12,7 @@ import { formatCurrency } from "@/lib/format";
 import { DashboardPaymentBreakdown } from "@/types";
 import { CreditCard } from "lucide-react";
 
-const COLORS = ["#6c63ff", "#8b5cf6", "#10b981"];
+const COLORS = ["#7b2cbf", "#c77dff", "#10b981"];
 
 const METHOD_LABELS: Record<DashboardPaymentBreakdown["method"], string> = {
   CASH: "Cash",

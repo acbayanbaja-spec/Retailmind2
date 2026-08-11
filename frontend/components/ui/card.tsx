@@ -1,14 +1,32 @@
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  hover?: boolean;
 }
 
-export function Card({ children, className, ...props }: CardProps) {
+export function Card({ children, className, hover = false, ...props }: CardProps) {
+  if (hover) {
+    return (
+      <motion.div
+        whileHover={{ y: -4, scale: 1.01 }}
+        transition={{ duration: 0.3 }}
+        className={cn(
+          "rounded-3xl border border-border/60 bg-card p-6 shadow-[var(--shadow-soft)] cursor-pointer",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-card p-6 shadow-sm",
+        "rounded-3xl border border-border/60 bg-card p-6 shadow-[var(--shadow-soft)]",
         className
       )}
       {...props}
@@ -36,7 +54,7 @@ export function CardTitle({
   className?: string;
 }) {
   return (
-    <h3 className={cn("text-base font-semibold text-foreground", className)}>
+    <h3 className={cn("text-base font-bold text-foreground", className)}>
       {children}
     </h3>
   );

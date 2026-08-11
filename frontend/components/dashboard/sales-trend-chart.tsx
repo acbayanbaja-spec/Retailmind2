@@ -38,8 +38,8 @@ export function SalesTrendChart({ data }: SalesTrendChartProps) {
           <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6c63ff" stopOpacity={0.35} />
-                <stop offset="95%" stopColor="#6c63ff" stopOpacity={0.02} />
+                <stop offset="5%" stopColor="#7b2cbf" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#7b2cbf" stopOpacity={0.02} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -67,7 +67,7 @@ export function SalesTrendChart({ data }: SalesTrendChartProps) {
             <Area
               type="monotone"
               dataKey="revenue"
-              stroke="#6c63ff"
+              stroke="#7b2cbf"
               strokeWidth={2}
               fill="url(#revenueGradient)"
             />

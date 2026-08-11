@@ -1,41 +1,57 @@
 @import "tailwindcss";
 
 :root {
-  /* RetailMind design tokens */
-  --primary: #6c63ff;
-  --secondary: #8b5cf6;
+  /* RetailMind — FoodMeal-inspired design tokens */
+  --primary: #7b2cbf;
+  --primary-dark: #6a1b9a;
+  --primary-light: #9d4edd;
+  --secondary: #c77dff;
+  --accent-yellow: #ffc107;
+  --accent-lime: #84cc16;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --background: #f4f4f5;
+  --background: #f5f0fa;
+  --background-soft: #faf7ff;
   --card: #ffffff;
-  --sidebar: #1e1e2f;
-  --foreground: #111827;
+  --sidebar: #7b2cbf;
+  --sidebar-dark: #6a1b9a;
+  --foreground: #1a1a2e;
   --muted-foreground: #6b7280;
-  --border: #e5e7eb;
-  --muted: #f3f4f6;
-  --ring: #6c63ff;
+  --border: #e8e0f0;
+  --muted: #f3eef8;
+  --ring: #7b2cbf;
+  --shadow-soft: 0 4px 24px rgba(123, 44, 191, 0.08);
+  --shadow-card: 0 8px 32px rgba(123, 44, 191, 0.1);
+  --shadow-hover: 0 12px 40px rgba(123, 44, 191, 0.16);
 }
 
 @theme inline {
   --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
   --color-secondary: var(--secondary);
+  --color-accent-yellow: var(--accent-yellow);
+  --color-accent-lime: var(--accent-lime);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-background: var(--background);
+  --color-background-soft: var(--background-soft);
   --color-card: var(--card);
   --color-sidebar: var(--sidebar);
+  --color-sidebar-dark: var(--sidebar-dark);
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
   --radius-2xl: 1.5rem;
+  --radius-3xl: 1.75rem;
 }
 
 * {
@@ -45,7 +61,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-poppins), system-ui, sans-serif;
 }
 
 /* Scrollbar styling */
@@ -59,10 +75,105 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #d4c4e8;
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #b89fd4;
+}
+
+/* Animation utilities */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    #e8dff5 50%,
+    var(--muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Card hover lift effect */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

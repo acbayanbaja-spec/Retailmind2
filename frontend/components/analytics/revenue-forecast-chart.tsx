@@ -57,8 +57,8 @@ export function RevenueForecastChart({
             <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6c63ff" stopOpacity={0.35} />
-                  <stop offset="95%" stopColor="#6c63ff" stopOpacity={0.02} />
+                  <stop offset="5%" stopColor="#7b2cbf" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#7b2cbf" stopOpacity={0.02} />
                 </linearGradient>
                 <linearGradient id="projectedGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.25} />
@@ -93,7 +93,7 @@ export function RevenueForecastChart({
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="#6c63ff"
+                stroke="#7b2cbf"
                 strokeWidth={2}
                 fill="url(#actualGradient)"
                 connectNulls
