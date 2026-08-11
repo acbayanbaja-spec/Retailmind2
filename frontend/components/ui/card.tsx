@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -7,26 +6,11 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Card({ children, className, hover = false, ...props }: CardProps) {
-  if (hover) {
-    return (
-      <motion.div
-        whileHover={{ y: -4, scale: 1.01 }}
-        transition={{ duration: 0.3 }}
-        className={cn(
-          "rounded-3xl border border-border/60 bg-card p-6 shadow-[var(--shadow-soft)] cursor-pointer",
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </motion.div>
-    );
-  }
-
   return (
     <div
       className={cn(
         "rounded-3xl border border-border/60 bg-card p-6 shadow-[var(--shadow-soft)]",
+        hover && "card-hover cursor-pointer",
         className
       )}
       {...props}
