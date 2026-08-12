@@ -14,6 +14,7 @@ import saleRoutes from "./sale.routes";
 import settingRoutes from "./setting.routes";
 import supplierRoutes from "./supplier.routes";
 import userRoutes from "./user.routes";
+import adminRoutes from "./admin.routes";
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.use("/reports", reportRoutes);
 router.use("/analytics", analyticsRoutes);
 router.use("/audit-logs", auditRoutes);
 router.use("/users", userRoutes);
+router.use("/admin", adminRoutes);
 router.use("/settings", settingRoutes);
 
 export default router;

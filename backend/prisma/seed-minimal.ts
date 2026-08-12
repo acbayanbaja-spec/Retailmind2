@@ -13,7 +13,7 @@ async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
 }
 
-async function main() {
+export async function main() {
   console.log("Checking if database needs seeding...\n");
 
   // Check if we already have any products
@@ -240,11 +240,14 @@ async function main() {
   console.log(`Products: ${products.length}\n`);
 }
 
-main()
-  .catch((e) => {
-    console.error("❌ Seed failed:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// Allow both direct execution and import
+if (require.main === module) {
+  main()
+    .catch((e) => {
+      console.error("❌ Seed failed:", e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
