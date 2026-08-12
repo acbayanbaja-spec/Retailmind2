@@ -11,7 +11,7 @@ async function ensureDatabaseSeeded() {
     const userCount = await prisma.user.count();
     if (userCount === 0) {
       console.log("🌱 Database is empty. Running auto-seed...");
-      await seedDatabase(false); // Don't force seed on startup
+      await seedDatabase(); // Don't force seed on startup
       console.log("✅ Auto-seed completed successfully.");
     } else {
       console.log(`✅ Database already has ${userCount} users. Skipping auto-seed.`);
