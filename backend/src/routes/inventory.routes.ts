@@ -11,8 +11,8 @@ import {
 const router = Router();
 
 router.use(authenticate);
-router.use(requirePermission("inventory.manage"));
 
+// Read-only endpoints - accessible to authenticated users
 router.get(
   "/",
   validateQuery(listInventoryQuerySchema),
@@ -24,8 +24,11 @@ router.get(
   validateQuery(listTransactionsQuerySchema),
   inventoryController.listTransactions
 );
+
+// Write endpoints - require inventory.manage permission
 router.post(
   "/adjust",
+  requirePermission("inventory.manage"),
   validateBody(adjustInventorySchema),
   inventoryController.adjust
 );

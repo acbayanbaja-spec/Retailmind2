@@ -13,8 +13,8 @@ import {
 const router = Router();
 
 router.use(authenticate);
-router.use(requirePermission("purchase_orders.manage"));
 
+// Read-only endpoints - accessible to authenticated users
 router.get(
   "/products",
   validateQuery(poProductsQuerySchema),
@@ -26,25 +26,30 @@ router.get(
   purchaseOrderController.list
 );
 router.get("/:id", purchaseOrderController.getById);
+
+// Write endpoints - require purchase_orders.manage permission
 router.post(
   "/",
+  requirePermission("purchase_orders.manage"),
   validateBody(createPurchaseOrderSchema),
   purchaseOrderController.create
 );
 router.patch(
   "/:id",
+  requirePermission("purchase_orders.manage"),
   validateBody(updatePurchaseOrderSchema),
   purchaseOrderController.update
 );
-router.post("/:id/submit", purchaseOrderController.submit);
-router.post("/:id/approve", purchaseOrderController.approve);
-router.post("/:id/order", purchaseOrderController.markOrdered);
+router.post("/:id/submit", requirePermission("purchase_orders.manage"), purchaseOrderController.submit);
+router.post("/:id/approve", requirePermission("purchase_orders.manage"), purchaseOrderController.approve);
+router.post("/:id/order", requirePermission("purchase_orders.manage"), purchaseOrderController.markOrdered);
 router.post(
   "/:id/receive",
+  requirePermission("purchase_orders.manage"),
   validateBody(receivePurchaseOrderSchema),
   purchaseOrderController.receive
 );
-router.post("/:id/cancel", purchaseOrderController.cancel);
-router.delete("/:id", purchaseOrderController.remove);
+router.post("/:id/cancel", requirePermission("purchase_orders.manage"), purchaseOrderController.cancel);
+router.delete("/:id", requirePermission("purchase_orders.manage"), purchaseOrderController.remove);
 
 export default router;

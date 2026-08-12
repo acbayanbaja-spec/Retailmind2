@@ -14,34 +14,39 @@ import {
 const router = Router();
 
 router.use(authenticate);
-router.use(requirePermission("expenses.manage"));
 
+// Read-only endpoints - accessible to authenticated users
 router.get(
   "/categories",
   validateQuery(listExpenseCategoriesQuerySchema),
   expenseController.listCategories
 );
+router.get("/summary", expenseController.getSummary);
+router.get("/", validateQuery(listExpensesQuerySchema), expenseController.list);
+router.get("/:id", expenseController.getById);
+
+// Write endpoints - require expenses.manage permission
 router.post(
   "/categories",
+  requirePermission("expenses.manage"),
   validateBody(createExpenseCategorySchema),
   expenseController.createCategory
 );
 router.patch(
   "/categories/:id",
+  requirePermission("expenses.manage"),
   validateBody(updateExpenseCategorySchema),
   expenseController.updateCategory
 );
-router.delete("/categories/:id", expenseController.removeCategory);
+router.delete("/categories/:id", requirePermission("expenses.manage"), expenseController.removeCategory);
 
-router.get("/summary", expenseController.getSummary);
-router.get("/", validateQuery(listExpensesQuerySchema), expenseController.list);
-router.get("/:id", expenseController.getById);
-router.post("/", validateBody(createExpenseSchema), expenseController.create);
+router.post("/", requirePermission("expenses.manage"), validateBody(createExpenseSchema), expenseController.create);
 router.patch(
   "/:id",
+  requirePermission("expenses.manage"),
   validateBody(updateExpenseSchema),
   expenseController.update
 );
-router.delete("/:id", expenseController.remove);
+router.delete("/:id", requirePermission("expenses.manage"), expenseController.remove);
 
 export default router;
