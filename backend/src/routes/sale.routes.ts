@@ -11,8 +11,8 @@ import {
 const router = Router();
 
 router.use(authenticate);
-router.use(requirePermission("sales.create"));
 
+// Read-only endpoints - accessible to authenticated users with sales permissions
 router.get(
   "/products",
   validateQuery(posProductSearchSchema),
@@ -20,6 +20,8 @@ router.get(
 );
 router.get("/", validateQuery(listSalesQuerySchema), saleController.list);
 router.get("/:id", saleController.getById);
-router.post("/", validateBody(createSaleSchema), saleController.create);
+
+// Write endpoints - require sales.create permission
+router.post("/", requirePermission("sales.create"), validateBody(createSaleSchema), saleController.create);
 
 export default router;

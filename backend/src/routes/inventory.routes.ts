@@ -10,6 +10,7 @@ import {
 
 const router = Router();
 
+// All endpoints require authentication (inventory is sensitive business data)
 router.use(authenticate);
 
 // Read-only endpoints - accessible to authenticated users

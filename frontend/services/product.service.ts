@@ -11,7 +11,7 @@ export interface ProductListParams {
 }
 
 export async function listProducts(
-  token: string,
+  token: string | null,
   params: ProductListParams = {}
 ) {
   const searchParams = new URLSearchParams();
@@ -25,7 +25,7 @@ export async function listProducts(
   const query = searchParams.toString();
   return apiClientPaginated<Product>(
     `/api/products${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
 }
 
@@ -66,26 +66,26 @@ export async function archiveProduct(token: string, id: string) {
   });
 }
 
-export async function listCategories(token: string) {
+export async function listCategories(token: string | null) {
   const response = await apiClient<CatalogOption[]>(
     "/api/products/meta/categories",
-    { token }
+    { token: token || undefined }
   );
   return response.data ?? [];
 }
 
-export async function listBrands(token: string) {
+export async function listBrands(token: string | null) {
   const response = await apiClient<CatalogOption[]>(
     "/api/products/meta/brands",
-    { token }
+    { token: token || undefined }
   );
   return response.data ?? [];
 }
 
-export async function listSuppliers(token: string) {
+export async function listSuppliers(token: string | null) {
   const response = await apiClient<CatalogOption[]>(
     "/api/products/meta/suppliers",
-    { token }
+    { token: token || undefined }
   );
   return response.data ?? [];
 }

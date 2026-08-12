@@ -10,11 +10,14 @@ import {
 
 const router = Router();
 
+// Public read-only endpoints for customer catalog
+router.get("/", validateQuery(listCustomersQuerySchema), customerController.list);
+router.get("/:id", customerController.getById);
+
+// All other endpoints require authentication and permissions
 router.use(authenticate);
 router.use(requirePermission("customers.manage"));
 
-router.get("/", validateQuery(listCustomersQuerySchema), customerController.list);
-router.get("/:id", customerController.getById);
 router.post("/", validateBody(createCustomerSchema), customerController.create);
 router.patch(
   "/:id",

@@ -14,29 +14,29 @@ import {
 } from "@/services/product.service";
 
 export function useProductCatalog(params: ProductListParams) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["products", params],
-    queryFn: () => listProducts(accessToken!, params),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => listProducts(accessToken || null, params),
+    // Public endpoint - no authentication required
   });
 }
 
 export function useProductMeta() {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["products", "meta"],
     queryFn: async () => {
       const [categories, brands, suppliers] = await Promise.all([
-        listCategories(accessToken!),
-        listBrands(accessToken!),
-        listSuppliers(accessToken!),
+        listCategories(accessToken || null),
+        listBrands(accessToken || null),
+        listSuppliers(accessToken || null),
       ]);
       return { categories, brands, suppliers };
     },
-    enabled: isAuthenticated && !!accessToken,
+    // Public endpoints - no authentication required
     staleTime: 60_000,
   });
 }

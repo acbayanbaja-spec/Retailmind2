@@ -10,11 +10,12 @@ import {
 
 const router = Router();
 
-router.use(authenticate);
-
-// Read-only endpoints - accessible to authenticated users
+// Public read-only endpoints for supplier catalog
 router.get("/", validateQuery(listSuppliersQuerySchema), supplierController.list);
 router.get("/:id", supplierController.getById);
+
+// All other endpoints require authentication
+router.use(authenticate);
 
 // Write endpoints - require products.manage permission
 router.post("/", requirePermission("products.manage"), validateBody(createSupplierSchema), supplierController.create);
