@@ -10,9 +10,7 @@ import {
 
 const router = Router();
 
-router.use(authenticate);
-
-// Read-only endpoints - accessible to managers and admins
+// Public read-only endpoints for product catalog
 router.get(
   "/",
   validateQuery(listProductsQuerySchema),
@@ -22,6 +20,9 @@ router.get("/meta/categories", productController.listCategories);
 router.get("/meta/brands", productController.listBrands);
 router.get("/meta/suppliers", productController.listSuppliers);
 router.get("/:id", productController.getById);
+
+// All other endpoints require authentication
+router.use(authenticate);
 
 // Write endpoints - require products.manage permission
 router.post("/", requirePermission("products.manage"), validateBody(createProductSchema), productController.create);
