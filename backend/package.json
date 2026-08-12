@@ -16,6 +16,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:prod": "tsx prisma/seed-prod.ts",
     "db:seed:simple": "tsx prisma/seed-prod-simple.ts",
+    "db:seed:minimal": "tsx prisma/seed-minimal.ts",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
   },
