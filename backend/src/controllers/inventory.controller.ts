@@ -5,7 +5,7 @@ import { sendPaginated, sendSuccess } from "../utils/response";
 export const inventoryController = {
   async list(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await inventoryService.list(req.query as never);
+      const result = await inventoryService.list(req.query as any);
       sendPaginated(res, result.items, result.pagination);
     } catch (err) {
       next(err);
@@ -23,7 +23,7 @@ export const inventoryController = {
 
   async listTransactions(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await inventoryService.listTransactions(req.query as never);
+      const result = await inventoryService.listTransactions(req.query as any);
       sendPaginated(res, result.items, result.pagination);
     } catch (err) {
       next(err);

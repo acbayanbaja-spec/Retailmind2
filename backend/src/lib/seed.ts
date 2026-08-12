@@ -234,7 +234,170 @@ export async function seedDatabase(force = false) {
     });
   }
 
-  console.log("✅ Minimal seed completed successfully.\n");
+  // ─── Suppliers (Expanded) ───────────────────────────────────────────────
+  const supplierDefs = [
+    { name: "ABC Distributors", contactPerson: "John Smith", email: "john@abc.com", phone: "+63 917 000 0100", address: "123 Manila St", city: "Manila" },
+    { name: "Global Supplies Inc", contactPerson: "Jane Doe", email: "jane@global.com", phone: "+63 917 000 0200", address: "456 Cebu Ave", city: "Cebu" },
+    { name: "Philippine Traders", contactPerson: "Pedro Santos", email: "pedro@ptraders.com", phone: "+63 917 000 0300", address: "789 Davao Blvd", city: "Davao" },
+    { name: "Metro Logistics", contactPerson: "Maria Reyes", email: "maria@metro.com", phone: "+63 917 000 0400", address: "321 Quezon Ave", city: "Quezon City" },
+    { name: "Island Trading", contactPerson: "Carlos Garcia", email: "carlos@island.com", phone: "+63 917 000 0500", address: "654 Makati Ave", city: "Makati" },
+  ];
+
+  const suppliers = [];
+  for (const s of supplierDefs) {
+    const supplier = await prisma.supplier.upsert({
+      where: { name: s.name },
+      update: { deletedAt: null, isActive: true },
+      create: { ...s, isActive: true },
+    });
+    suppliers.push(supplier);
+  }
+
+  // ─── Customers (Expanded) ───────────────────────────────────────────────
+  const customerDefs = [
+    { firstName: "Ana", lastName: "Santos", email: "ana.santos@email.com", phone: "+63 917 000 1001", address: "123 Main St", city: "Manila", level: "GOLD" },
+    { firstName: "Jose", lastName: "Reyes", email: "jose.reyes@email.com", phone: "+63 917 000 1002", address: "456 Oak Ave", city: "Cebu", level: "SILVER" },
+    { firstName: "Maria", lastName: "Garcia", email: "maria.garcia@email.com", phone: "+63 917 000 1003", address: "789 Pine Rd", city: "Davao", level: "BRONZE" },
+    { firstName: "Carlos", lastName: "Mendoza", email: "carlos.mendoza@email.com", phone: "+63 917 000 1004", address: "321 Elm St", city: "Quezon City", level: "GOLD" },
+    { firstName: "Sofia", lastName: "Ramos", email: "sofia.ramos@email.com", phone: "+63 917 000 1005", address: "654 Maple Dr", city: "Makati", level: "SILVER" },
+    { firstName: "Miguel", lastName: "Cruz", email: "miguel.cruz@email.com", phone: "+63 917 000 1006", address: "987 Cedar Ln", city: "Manila", level: "BRONZE" },
+    { firstName: "Isabella", lastName: "Flores", email: "isabella.flores@email.com", phone: "+63 917 000 1007", address: "147 Birch Way", city: "Cebu", level: "GOLD" },
+    { firstName: "Diego", lastName: "Torres", email: "diego.torres@email.com", phone: "+63 917 000 1008", address: "258 Spruce St", city: "Davao", level: "SILVER" },
+    { firstName: "Elena", lastName: "Rivera", email: "elena.rivera@email.com", phone: "+63 917 000 1009", address: "369 Aspen Ave", city: "Quezon City", level: "BRONZE" },
+    { firstName: "Luis", lastName: "Castillo", email: "luis.castillo@email.com", phone: "+63 917 000 1010", address: "741 Willow Rd", city: "Makati", level: "GOLD" },
+  ];
+
+  const customers = [];
+  for (const c of customerDefs) {
+    const customer = await prisma.customer.upsert({
+      where: { email: c.email },
+      update: { deletedAt: null, isActive: true },
+      create: { ...c, isActive: true },
+    });
+    customers.push(customer);
+  }
+
+  // ─── Expenses (Expanded) ─────────────────────────────────────────────────
+  const expenseCategoryDefs = [
+    { name: "Utilities", description: "Electricity, water, internet" },
+    { name: "Rent", description: "Store rent and lease" },
+    { name: "Salaries", description: "Employee salaries" },
+    { name: "Supplies", description: "Office supplies" },
+    { name: "Marketing", description: "Advertising and promotions" },
+  ];
+
+  const expenseCategories = [];
+  for (const ec of expenseCategoryDefs) {
+    const category = await prisma.expenseCategory.upsert({
+      where: { name: ec.name },
+      update: { deletedAt: null, isActive: true },
+      create: { ...ec, isActive: true },
+    });
+    expenseCategories.push(category);
+  }
+
+  const expenseDefs = [
+    { categoryId: 0, amount: 5000, description: "Electricity bill - July", date: new Date("2026-07-15") },
+    { categoryId: 1, amount: 25000, description: "Monthly rent - July", date: new Date("2026-07-01") },
+    { categoryId: 2, amount: 45000, description: "Staff salaries - July", date: new Date("2026-07-30") },
+    { categoryId: 3, amount: 1500, description: "Office supplies", date: new Date("2026-07-10") },
+    { categoryId: 4, amount: 3000, description: "Social media ads", date: new Date("2026-07-20") },
+    { categoryId: 0, amount: 4800, description: "Water bill - July", date: new Date("2026-07-15") },
+    { categoryId: 3, amount: 2200, description: "Packaging materials", date: new Date("2026-07-25") },
+    { categoryId: 4, amount: 5000, description: "Flyer printing", date: new Date("2026-07-18") },
+  ];
+
+  const expenses = [];
+  for (const e of expenseDefs) {
+    const expense = await prisma.expense.upsert({
+      where: { id: "" }, // Use create since we don't have unique IDs
+      update: {},
+      create: {
+        categoryId: expenseCategories[e.categoryId].id,
+        amount: e.amount,
+        description: e.description,
+        date: e.date,
+        performedById: admin.id,
+      },
+    });
+    expenses.push(expense);
+  }
+
+  // ─── Purchase Orders (Expanded) ─────────────────────────────────────────
+  const poDefs = [
+    { supplierId: 0, status: "RECEIVED", orderDate: new Date("2026-07-01"), expectedDate: new Date("2026-07-05"), totalAmount: 15000 },
+    { supplierId: 1, status: "RECEIVED", orderDate: new Date("2026-07-10"), expectedDate: new Date("2026-07-15"), totalAmount: 22000 },
+    { supplierId: 2, status: "ORDERED", orderDate: new Date("2026-07-20"), expectedDate: new Date("2026-07-25"), totalAmount: 18000 },
+    { supplierId: 3, status: "PENDING", orderDate: new Date("2026-07-25"), expectedDate: new Date("2026-07-30"), totalAmount: 12000 },
+    { supplierId: 4, status: "RECEIVED", orderDate: new Date("2026-07-05"), expectedDate: new Date("2026-07-10"), totalAmount: 25000 },
+  ];
+
+  const purchaseOrders = [];
+  for (const po of poDefs) {
+    const purchaseOrder = await prisma.purchaseOrder.upsert({
+      where: { id: "" },
+      update: {},
+      create: {
+        supplierId: suppliers[po.supplierId].id,
+        status: po.status as any,
+        orderDate: po.orderDate,
+        expectedDate: po.expectedDate,
+        totalAmount: po.totalAmount,
+        createdById: admin.id,
+      },
+    });
+    purchaseOrders.push(purchaseOrder);
+  }
+
+  // ─── Sales (Expanded) ───────────────────────────────────────────────────
+  const saleDefs = [
+    { customerId: 0, totalAmount: 250, status: "COMPLETED", saleDate: new Date("2026-07-01T10:30:00") },
+    { customerId: 1, totalAmount: 450, status: "COMPLETED", saleDate: new Date("2026-07-02T14:15:00") },
+    { customerId: 2, totalAmount: 180, status: "COMPLETED", saleDate: new Date("2026-07-03T09:45:00") },
+    { customerId: 3, totalAmount: 320, status: "COMPLETED", saleDate: new Date("2026-07-04T16:20:00") },
+    { customerId: 4, totalAmount: 590, status: "COMPLETED", saleDate: new Date("2026-07-05T11:00:00") },
+    { customerId: 5, totalAmount: 210, status: "COMPLETED", saleDate: new Date("2026-07-06T13:30:00") },
+    { customerId: 6, totalAmount: 380, status: "COMPLETED", saleDate: new Date("2026-07-07T15:45:00") },
+    { customerId: 7, totalAmount: 460, status: "COMPLETED", saleDate: new Date("2026-07-08T10:15:00") },
+    { customerId: 8, totalAmount: 290, status: "COMPLETED", saleDate: new Date("2026-07-09T14:00:00") },
+    { customerId: 9, totalAmount: 520, status: "COMPLETED", saleDate: new Date("2026-07-10T12:30:00") },
+  ];
+
+  const sales = [];
+  for (const s of saleDefs) {
+    const sale = await prisma.sale.upsert({
+      where: { id: "" },
+      update: {},
+      create: {
+        customerId: customers[s.customerId].id,
+        totalAmount: s.totalAmount,
+        status: s.status as any,
+        saleDate: s.saleDate,
+        cashierId: cashier.id,
+      },
+    });
+    sales.push(sale);
+  }
+
+  // ─── Activity Logs (Audit Logs) ───────────────────────────────────────────
+  const activityDefs = [
+    { userId: admin.id, action: "CREATE", entityType: "product", entityId: products[0].id, description: "Created product Bottled Water" },
+    { userId: manager.id, action: "UPDATE", entityType: "product", entityId: products[1].id, description: "Updated product Potato Chips" },
+    { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[0].id, description: "Created sale for customer Ana Santos" },
+    { userId: admin.id, action: "CREATE", entityType: "supplier", entityId: suppliers[0].id, description: "Created supplier ABC Distributors" },
+    { userId: manager.id, action: "CREATE", entityType: "customer", entityId: customers[0].id, description: "Created customer Ana Santos" },
+    { userId: admin.id, action: "CREATE", entityType: "expense", entityId: expenses[0].id, description: "Created expense for utilities" },
+    { userId: manager.id, action: "UPDATE", entityType: "purchase_order", entityId: purchaseOrders[0].id, description: "Updated purchase order status" },
+    { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[1].id, description: "Created sale for customer Jose Reyes" },
+  ];
+
+  for (const a of activityDefs) {
+    await prisma.activityLog.create({
+      data: a,
+    });
+  }
+
+  console.log("✅ Expanded seed completed successfully.\n");
   console.log("─── PRODUCTION CREDENTIALS ───");
   console.log(`Password for all users: ${PROD_PASSWORD}`);
   console.log("⚠️  CHANGE THIS PASSWORD IMMEDIATELY IN PRODUCTION!\n");
@@ -248,5 +411,12 @@ export async function seedDatabase(force = false) {
   console.log(`Permissions: ${allPermissionIds.length}`);
   console.log(`Categories: ${categories.length}`);
   console.log(`Brands: ${brands.length}`);
-  console.log(`Products: ${products.length}\n`);
+  console.log(`Products: ${products.length}`);
+  console.log(`Suppliers: ${suppliers.length}`);
+  console.log(`Customers: ${customers.length}`);
+  console.log(`Expense Categories: ${expenseCategories.length}`);
+  console.log(`Expenses: ${expenses.length}`);
+  console.log(`Purchase Orders: ${purchaseOrders.length}`);
+  console.log(`Sales: ${sales.length}`);
+  console.log(`Activity Logs: ${activityDefs.length}\n`);
 }

@@ -10,10 +10,7 @@ import {
 
 const router = Router();
 
-// All endpoints require authentication (inventory is sensitive business data)
-router.use(authenticate);
-
-// Read-only endpoints - accessible to authenticated users
+// Public read-only endpoints for inventory visibility
 router.get(
   "/",
   validateQuery(listInventoryQuerySchema),
@@ -25,6 +22,9 @@ router.get(
   validateQuery(listTransactionsQuerySchema),
   inventoryController.listTransactions
 );
+
+// All other endpoints require authentication
+router.use(authenticate);
 
 // Write endpoints - require inventory.manage permission
 router.post(

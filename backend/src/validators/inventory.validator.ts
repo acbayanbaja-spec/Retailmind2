@@ -2,21 +2,18 @@ import { InventoryTransactionType } from "@prisma/client";
 import { z } from "zod";
 
 export const listInventoryQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
+  page: z.string().optional().transform((v) => v ? Number(v) : undefined),
+  limit: z.string().optional().transform((v) => v ? Number(v) : undefined),
   search: z.string().trim().optional(),
-  lowStock: z
-    .enum(["true", "false"])
-    .optional()
-    .transform((v) => v === "true"),
+  lowStock: z.string().optional().transform((v) => v === "true"),
 });
 
 export type ListInventoryQuery = z.infer<typeof listInventoryQuerySchema>;
 
 export const listTransactionsQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
-  productId: z.string().uuid().optional(),
+  page: z.string().optional().transform((v) => v ? Number(v) : undefined),
+  limit: z.string().optional().transform((v) => v ? Number(v) : undefined),
+  productId: z.string().optional(),
 });
 
 export type ListTransactionsQuery = z.infer<typeof listTransactionsQuerySchema>;
