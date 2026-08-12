@@ -252,19 +252,27 @@ async function main() {
     const address = getRandomAddress();
     const city = getRandomItem(cities);
     
-    const supplier = await prisma.supplier.upsert({
-      where: { id: `00000000-0000-4000-8000-${String(i).padStart(12, '0')}` },
-      update: {},
-      create: {
-        id: `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`,
-        name,
-        contactPerson,
-        email,
-        phone,
-        address,
-        city,
-      },
+    // Check if supplier with this email already exists
+    const existing = await prisma.supplier.findFirst({
+      where: { email, deletedAt: null }
     });
+    
+    let supplier;
+    
+    if (existing) {
+      supplier = existing;
+    } else {
+      supplier = await prisma.supplier.create({
+        data: {
+          name,
+          contactPerson,
+          email,
+          phone,
+          address,
+          city,
+        },
+      });
+    }
     
     suppliers.push(supplier);
   }
@@ -300,25 +308,60 @@ async function main() {
 
   const products = [];
   for (const p of productDefs) {
-    const product = await prisma.product.upsert({
-      where: { sku: p.sku },
-      update: {},
-      create: {
-        sku: p.sku,
-        barcode: p.barcode,
-        name: p.name,
-        description: `${p.name} — retail product`,
-        categoryId: categories[p.category].id,
-        brandId: brands[p.brand].id,
-        supplierId: suppliers[p.supplier].id,
-        costPrice: p.cost,
-        sellingPrice: p.price,
-        currentStock: p.stock,
-        minStock: p.min,
-        maxStock: p.stock * 3,
-        status: ProductStatus.ACTIVE,
-      },
+    // Check if product with this SKU or barcode already exists
+    const existingBySku = await prisma.product.findFirst({
+      where: { sku: p.sku, deletedAt: null }
     });
+    
+    const existingByBarcode = p.barcode ? await prisma.product.findFirst({
+      where: { barcode: p.barcode, deletedAt: null }
+    }) : null;
+
+    let product;
+    
+    if (existingBySku) {
+      // Update existing product by SKU
+      product = await prisma.product.update({
+        where: { id: existingBySku.id },
+        data: {
+          barcode: p.barcode,
+          name: p.name,
+          description: `${p.name} — retail product`,
+          categoryId: categories[p.category].id,
+          brandId: brands[p.brand].id,
+          supplierId: suppliers[p.supplier].id,
+          costPrice: p.cost,
+          sellingPrice: p.price,
+          currentStock: p.stock,
+          minStock: p.min,
+          maxStock: p.stock * 3,
+          status: ProductStatus.ACTIVE,
+        },
+      });
+    } else if (existingByBarcode) {
+      // Skip if barcode exists but different SKU (avoid duplicates)
+      console.log(`⚠️  Skipping product ${p.sku} - barcode ${p.barcode} already exists`);
+      continue;
+    } else {
+      // Create new product
+      product = await prisma.product.create({
+        data: {
+          sku: p.sku,
+          barcode: p.barcode,
+          name: p.name,
+          description: `${p.name} — retail product`,
+          categoryId: categories[p.category].id,
+          brandId: brands[p.brand].id,
+          supplierId: suppliers[p.supplier].id,
+          costPrice: p.cost,
+          sellingPrice: p.price,
+          currentStock: p.stock,
+          minStock: p.min,
+          maxStock: p.stock * 3,
+          status: ProductStatus.ACTIVE,
+        },
+      });
+    }
 
     await prisma.inventory.upsert({
       where: { productId: product.id },
@@ -390,11 +433,18 @@ async function main() {
 
   const customers = [];
   for (const c of customerDefs) {
-    const customer = c.email
-      ? await prisma.customer.upsert({
-          where: { email: c.email },
-          update: {},
-          create: {
+    let customer;
+    
+    if (c.email) {
+      const existing = await prisma.customer.findFirst({
+        where: { email: c.email, deletedAt: null }
+      });
+      
+      if (existing) {
+        customer = existing;
+      } else {
+        customer = await prisma.customer.create({
+          data: {
             firstName: c.firstName,
             lastName: c.lastName,
             email: c.email,
@@ -403,14 +453,31 @@ async function main() {
             city: c.city,
             totalSpent: 0,
           },
-        })
-      : await prisma.customer.create({
+        });
+      }
+    } else {
+      // For walk-in customer, find or create
+      const existing = await prisma.customer.findFirst({
+        where: { 
+          firstName: c.firstName, 
+          lastName: c.lastName, 
+          email: null,
+          deletedAt: null 
+        }
+      });
+      
+      if (existing) {
+        customer = existing;
+      } else {
+        customer = await prisma.customer.create({
           data: {
             firstName: c.firstName,
             lastName: c.lastName,
             totalSpent: 0,
           },
         });
+      }
+    }
 
     await prisma.customerMembership.upsert({
       where: { customerId: customer.id },
