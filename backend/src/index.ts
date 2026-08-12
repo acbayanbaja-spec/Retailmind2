@@ -1,7 +1,7 @@
 import app from "./app";
 import { env } from "./config/env";
 import prisma from "./lib/prisma";
-import { main as seedDatabase } from "../prisma/seed-minimal";
+import { seedDatabase } from "./lib/seed";
 
 const PORT = env.PORT;
 const HOST = "0.0.0.0";
