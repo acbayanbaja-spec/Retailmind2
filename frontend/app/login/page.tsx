@@ -8,6 +8,8 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   BarChart3,
+  Eye,
+  EyeOff,
   Lock,
   Mail,
   Package,
@@ -20,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants/colors";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { loginSchema, LoginFormValues } from "@/schemas/auth.schema";
 import { ApiError } from "@/lib/api-client";
@@ -35,6 +38,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, isAuthenticated, isLoading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -210,14 +214,42 @@ export default function LoginPage() {
                 {...register("email")}
               />
 
-              <Input
-                label="Password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="Enter your password"
-                error={errors.password?.message}
-                {...register("password")}
-              />
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-semibold text-foreground"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
+                    className={cn(
+                      "flex h-12 w-full rounded-2xl border border-border bg-background-soft px-4 pr-12 text-sm outline-none transition-all duration-300 placeholder:text-muted-foreground focus:border-primary/40 focus:bg-card focus:ring-2 focus:ring-primary/15",
+                      errors.password?.message && "border-danger focus:ring-danger/20"
+                    )}
+                    {...register("password")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                {errors.password?.message && (
+                  <p className="text-xs font-medium text-danger">{errors.password?.message}</p>
+                )}
+              </div>
 
               <Button
                 type="submit"

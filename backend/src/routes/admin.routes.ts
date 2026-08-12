@@ -12,7 +12,7 @@ router.use(requirePermission("users.manage"));
 // Temporary endpoint to trigger database seeding
 router.post("/seed-minimal", async (req, res) => {
   try {
-    const PROD_PASSWORD = process.env.ADMIN_PASSWORD || "AdminPassword123!";
+    const PROD_PASSWORD = process.env.ADMIN_PASSWORD || "DevPassword123!";
     
     async function hashPassword(password: string): Promise<string> {
       return bcrypt.hash(password, 12);
@@ -252,6 +252,46 @@ router.post("/seed-minimal", async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: "Failed to seed database",
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Temporary endpoint to update all user passwords
+router.post("/update-passwords", async (req, res) => {
+  try {
+    const NEW_PASSWORD = process.env.ADMIN_PASSWORD || "DevPassword123!";
+    
+    const passwordHash = await bcrypt.hash(NEW_PASSWORD, 12);
+
+    const users = await prisma.user.findMany({
+      where: { deletedAt: null }
+    });
+
+    console.log(`Found ${users.length} users to update`);
+
+    for (const user of users) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash }
+      });
+      console.log(`✅ Updated password for ${user.email}`);
+    }
+
+    console.log("\n✅ All passwords updated successfully!");
+    
+    res.json({ 
+      success: true, 
+      message: `Updated passwords for ${users.length} users`,
+      newPassword: NEW_PASSWORD,
+      note: "This is a temporary endpoint for password updates. Remove after production setup."
+    });
+    
+  } catch (error) {
+    console.error('Password update error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to update passwords",
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }

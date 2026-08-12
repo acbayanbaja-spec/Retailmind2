@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-const PROD_PASSWORD = process.env.ADMIN_PASSWORD || "AdminPassword123!";
+const PROD_PASSWORD = process.env.ADMIN_PASSWORD || "DevPassword123!";
 
 async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
