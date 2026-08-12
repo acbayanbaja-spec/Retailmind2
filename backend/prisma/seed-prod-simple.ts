@@ -320,11 +320,19 @@ async function main() {
     let product;
     
     if (existingBySku) {
-      // Update existing product by SKU
+      // Update existing product by SKU, but check barcode conflict
+      let barcodeToUse = p.barcode;
+      
+      // If the existing product has a different barcode and our desired barcode is taken by another product
+      if (existingByBarcode && existingByBarcode.id !== existingBySku.id) {
+        console.log(`⚠️  Skipping barcode update for ${p.sku} - barcode ${p.barcode} already exists on another product`);
+        barcodeToUse = existingBySku.barcode; // Keep existing barcode
+      }
+      
       product = await prisma.product.update({
         where: { id: existingBySku.id },
         data: {
-          barcode: p.barcode,
+          ...(barcodeToUse && barcodeToUse !== existingBySku.barcode ? { barcode: barcodeToUse } : {}),
           name: p.name,
           description: `${p.name} — retail product`,
           categoryId: categories[p.category].id,
