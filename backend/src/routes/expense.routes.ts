@@ -13,9 +13,7 @@ import {
 
 const router = Router();
 
-router.use(authenticate);
-
-// Read-only endpoints - accessible to authenticated users
+// Public read-only endpoints for expense visibility
 router.get(
   "/categories",
   validateQuery(listExpenseCategoriesQuerySchema),
@@ -24,6 +22,9 @@ router.get(
 router.get("/summary", expenseController.getSummary);
 router.get("/", validateQuery(listExpensesQuerySchema), expenseController.list);
 router.get("/:id", expenseController.getById);
+
+// All other endpoints require authentication
+router.use(authenticate);
 
 // Write endpoints - require expenses.manage permission
 router.post(

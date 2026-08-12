@@ -16,7 +16,7 @@ export interface ExpenseListParams {
   dateTo?: string;
 }
 
-export async function listExpenses(token: string, params: ExpenseListParams = {}) {
+export async function listExpenses(token: string | null, params: ExpenseListParams = {}) {
   const searchParams = new URLSearchParams();
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
@@ -29,18 +29,18 @@ export async function listExpenses(token: string, params: ExpenseListParams = {}
   const query = searchParams.toString();
   return apiClientPaginated<Expense>(
     `/api/expenses${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
 }
 
-export async function getExpenseSummary(token: string, month?: string) {
+export async function getExpenseSummary(token: string | null, month?: string) {
   const searchParams = new URLSearchParams();
   if (month) searchParams.set("month", month);
 
   const query = searchParams.toString();
   const response = await apiClient<ExpenseSummary>(
     `/api/expenses/summary${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
   return response.data!;
 }
@@ -78,7 +78,7 @@ export async function archiveExpense(token: string, id: string) {
 }
 
 export async function listExpenseCategories(
-  token: string,
+  token: string | null,
   isActive?: boolean
 ) {
   const searchParams = new URLSearchParams();
@@ -89,7 +89,7 @@ export async function listExpenseCategories(
   const query = searchParams.toString();
   const response = await apiClient<ExpenseCategory[]>(
     `/api/expenses/categories${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
   return response.data ?? [];
 }

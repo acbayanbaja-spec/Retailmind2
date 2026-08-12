@@ -11,33 +11,33 @@ import {
 } from "@/services/inventory.service";
 
 export function useInventoryList(params: InventoryListParams) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["inventory", "list", params],
-    queryFn: () => listInventory(accessToken!, params),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => listInventory(accessToken || null, params),
+    // Public endpoint - no authentication required
   });
 }
 
 export function useInventorySummary() {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["inventory", "summary"],
-    queryFn: () => getInventorySummary(accessToken!),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => getInventorySummary(accessToken || null),
+    // Public endpoint - no authentication required
   });
 }
 
 export function useInventoryTransactions(page = 1) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["inventory", "transactions", page],
     queryFn: () =>
-      listInventoryTransactions(accessToken!, { page, limit: 10 }),
-    enabled: isAuthenticated && !!accessToken,
+      listInventoryTransactions(accessToken || null, { page, limit: 10 }),
+    // Public endpoint - no authentication required
   });
 }
 

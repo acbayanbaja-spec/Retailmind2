@@ -11,12 +11,12 @@ import {
 } from "@/services/supplier.service";
 
 export function useSupplierList(params: SupplierListParams) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["suppliers", params],
-    queryFn: () => listSuppliers(accessToken!, params),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => listSuppliers(accessToken || null, params),
+    // Public endpoint - no authentication required
   });
 }
 

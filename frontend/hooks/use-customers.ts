@@ -11,12 +11,12 @@ import {
 } from "@/services/customer.service";
 
 export function useCustomerList(params: CustomerListParams) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["customers", params],
-    queryFn: () => listCustomers(accessToken!, params),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => listCustomers(accessToken || null, params),
+    // Public endpoint - no authentication required
   });
 }
 

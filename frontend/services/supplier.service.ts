@@ -8,7 +8,7 @@ export interface SupplierListParams {
   isActive?: boolean;
 }
 
-export async function listSuppliers(token: string, params: SupplierListParams = {}) {
+export async function listSuppliers(token: string | null, params: SupplierListParams = {}) {
   const searchParams = new URLSearchParams();
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
@@ -20,7 +20,7 @@ export async function listSuppliers(token: string, params: SupplierListParams = 
   const query = searchParams.toString();
   return apiClientPaginated<Supplier>(
     `/api/suppliers${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
 }
 

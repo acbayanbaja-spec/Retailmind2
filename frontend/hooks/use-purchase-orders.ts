@@ -19,32 +19,32 @@ import {
 } from "@/services/purchase-order.service";
 
 export function usePurchaseOrderList(params: PurchaseOrderListParams) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["purchase-orders", params],
-    queryFn: () => listPurchaseOrders(accessToken!, params),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => listPurchaseOrders(accessToken || null, params),
+    // Public endpoint - no authentication required
   });
 }
 
 export function usePurchaseOrder(id: string | null) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["purchase-orders", id],
-    queryFn: () => getPurchaseOrder(accessToken!, id!),
-    enabled: isAuthenticated && !!accessToken && !!id,
+    queryFn: () => getPurchaseOrder(accessToken || null, id!),
+    enabled: !!id,
   });
 }
 
 export function usePoProducts(params: PoProductsParams | null) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["po-products", params],
-    queryFn: () => listPoProducts(accessToken!, params!),
-    enabled: isAuthenticated && !!accessToken && !!params?.supplierId,
+    queryFn: () => listPoProducts(accessToken || null, params!),
+    enabled: !!params?.supplierId,
   });
 }
 

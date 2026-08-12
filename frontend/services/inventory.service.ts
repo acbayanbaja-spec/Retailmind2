@@ -13,7 +13,7 @@ export interface InventoryListParams {
 }
 
 export async function listInventory(
-  token: string,
+  token: string | null,
   params: InventoryListParams = {}
 ) {
   const searchParams = new URLSearchParams();
@@ -25,19 +25,19 @@ export async function listInventory(
   const query = searchParams.toString();
   return apiClientPaginated<InventoryRow>(
     `/api/inventory${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
 }
 
-export async function getInventorySummary(token: string) {
+export async function getInventorySummary(token: string | null) {
   const response = await apiClient<InventorySummary>("/api/inventory/summary", {
-    token,
+    token: token || undefined,
   });
   return response.data!;
 }
 
 export async function listInventoryTransactions(
-  token: string,
+  token: string | null,
   params: { page?: number; limit?: number; productId?: string } = {}
 ) {
   const searchParams = new URLSearchParams();
@@ -48,7 +48,7 @@ export async function listInventoryTransactions(
   const query = searchParams.toString();
   return apiClientPaginated<InventoryTransaction>(
     `/api/inventory/transactions${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
 }
 

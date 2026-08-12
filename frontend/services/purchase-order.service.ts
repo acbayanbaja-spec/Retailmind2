@@ -16,7 +16,7 @@ export interface PoProductsParams {
 }
 
 export async function listPurchaseOrders(
-  token: string,
+  token: string | null,
   params: PurchaseOrderListParams = {}
 ) {
   const searchParams = new URLSearchParams();
@@ -29,18 +29,18 @@ export async function listPurchaseOrders(
   const query = searchParams.toString();
   return apiClientPaginated<PurchaseOrder>(
     `/api/purchase-orders${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
 }
 
-export async function getPurchaseOrder(token: string, id: string) {
+export async function getPurchaseOrder(token: string | null, id: string) {
   const response = await apiClient<PurchaseOrder>(`/api/purchase-orders/${id}`, {
-    token,
+    token: token || undefined,
   });
   return response.data!;
 }
 
-export async function listPoProducts(token: string, params: PoProductsParams) {
+export async function listPoProducts(token: string | null, params: PoProductsParams) {
   const searchParams = new URLSearchParams();
   searchParams.set("supplierId", params.supplierId);
   if (params.search) searchParams.set("search", params.search);
@@ -48,7 +48,7 @@ export async function listPoProducts(token: string, params: PoProductsParams) {
 
   const response = await apiClient<PoProductOption[]>(
     `/api/purchase-orders/products?${searchParams.toString()}`,
-    { token }
+    { token: token || undefined }
   );
   return response.data ?? [];
 }

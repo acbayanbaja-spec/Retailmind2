@@ -12,9 +12,7 @@ import {
 
 const router = Router();
 
-router.use(authenticate);
-
-// Read-only endpoints - accessible to authenticated users
+// Public read-only endpoints for purchase order visibility
 router.get(
   "/products",
   validateQuery(poProductsQuerySchema),
@@ -26,6 +24,9 @@ router.get(
   purchaseOrderController.list
 );
 router.get("/:id", purchaseOrderController.getById);
+
+// All other endpoints require authentication
+router.use(authenticate);
 
 // Write endpoints - require purchase_orders.manage permission
 router.post(

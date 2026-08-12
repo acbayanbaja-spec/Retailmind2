@@ -16,32 +16,32 @@ import {
 } from "@/services/expense.service";
 
 export function useExpenseList(params: ExpenseListParams) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["expenses", params],
-    queryFn: () => listExpenses(accessToken!, params),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => listExpenses(accessToken || null, params),
+    // Public endpoint - no authentication required
   });
 }
 
 export function useExpenseSummary(month?: string) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["expenses", "summary", month],
-    queryFn: () => getExpenseSummary(accessToken!, month),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => getExpenseSummary(accessToken || null, month),
+    // Public endpoint - no authentication required
   });
 }
 
 export function useExpenseCategories(isActive?: boolean) {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken } = useAuth();
 
   return useQuery({
     queryKey: ["expense-categories", isActive],
-    queryFn: () => listExpenseCategories(accessToken!, isActive),
-    enabled: isAuthenticated && !!accessToken,
+    queryFn: () => listExpenseCategories(accessToken || null, isActive),
+    // Public endpoint - no authentication required
   });
 }
 

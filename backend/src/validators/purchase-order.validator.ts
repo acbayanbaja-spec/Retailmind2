@@ -2,19 +2,19 @@ import { PurchaseOrderStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const listPurchaseOrdersQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
+  page: z.string().optional().transform((v) => v ? Number(v) : undefined),
+  limit: z.string().optional().transform((v) => v ? Number(v) : undefined),
   search: z.string().trim().optional(),
-  status: z.nativeEnum(PurchaseOrderStatus).optional(),
-  supplierId: z.string().uuid().optional(),
+  status: z.string().optional(),
+  supplierId: z.string().optional(),
 });
 
 export type ListPurchaseOrdersQuery = z.infer<typeof listPurchaseOrdersQuerySchema>;
 
 export const poProductsQuerySchema = z.object({
-  supplierId: z.string().uuid(),
+  supplierId: z.string(),
   search: z.string().trim().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
+  limit: z.string().optional().transform((v) => v ? Number(v) : undefined),
 });
 
 export type PoProductsQuery = z.infer<typeof poProductsQuerySchema>;

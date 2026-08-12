@@ -8,7 +8,7 @@ export interface CustomerListParams {
   isActive?: boolean;
 }
 
-export async function listCustomers(token: string, params: CustomerListParams = {}) {
+export async function listCustomers(token: string | null, params: CustomerListParams = {}) {
   const searchParams = new URLSearchParams();
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
@@ -20,13 +20,13 @@ export async function listCustomers(token: string, params: CustomerListParams = 
   const query = searchParams.toString();
   return apiClientPaginated<Customer>(
     `/api/customers${query ? `?${query}` : ""}`,
-    { token }
+    { token: token || undefined }
   );
 }
 
-export async function getCustomer(token: string, id: string) {
+export async function getCustomer(token: string | null, id: string) {
   const response = await apiClient<CustomerDetail>(`/api/customers/${id}`, {
-    token,
+    token: token || undefined,
   });
   return response.data!;
 }

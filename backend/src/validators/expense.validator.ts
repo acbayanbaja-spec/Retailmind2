@@ -11,10 +11,10 @@ export const expenseRecurrenceEnum = z.enum([
 const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 
 export const listExpensesQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
+  page: z.string().optional().transform((v) => v ? Number(v) : undefined),
+  limit: z.string().optional().transform((v) => v ? Number(v) : undefined),
   search: z.string().trim().optional(),
-  categoryId: z.string().uuid().optional(),
+  categoryId: z.string().optional(),
   recurrence: expenseRecurrenceEnum.optional(),
   dateFrom: dateOnlySchema.optional(),
   dateTo: dateOnlySchema.optional(),
