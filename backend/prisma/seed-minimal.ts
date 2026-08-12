@@ -2,7 +2,10 @@
 // This allows both manual execution and TypeScript compliance
 import { seedDatabase } from "../src/lib/seed";
 
-seedDatabase()
+// Check for --force flag
+const forceSeed = process.argv.includes('--force');
+
+seedDatabase(forceSeed)
   .catch((e) => {
     console.error("❌ Seed failed:", e);
     process.exit(1);

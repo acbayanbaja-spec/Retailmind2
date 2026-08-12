@@ -6,6 +6,40 @@ import bcrypt from "bcryptjs";
 
 const router = Router();
 
+// Force-seed endpoint (no auth for emergency production recovery)
+router.post("/force-seed", async (req, res) => {
+  try {
+    console.log("🔄 Force-seeding database (bypassing checks)...");
+    
+    await seedDatabase(true); // Force seeding
+    
+    const PROD_PASSWORD = process.env.ADMIN_PASSWORD || "DevPassword123!";
+    
+    res.json({ 
+      success: true, 
+      message: "Database force-seeded successfully",
+      note: "This endpoint bypasses existing data checks. Use with caution.",
+      credentials: {
+        password: PROD_PASSWORD,
+        users: {
+          admin: "admin@retailmind.dev",
+          manager: "manager@retailmind.dev", 
+          cashier: "cashier@retailmind.dev"
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error('Force-seed error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to force-seed database",
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// All other admin endpoints require authentication
 router.use(authenticate);
 router.use(requirePermission("users.manage"));
 

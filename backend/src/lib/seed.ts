@@ -9,12 +9,12 @@ async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
 }
 
-export async function seedDatabase() {
+export async function seedDatabase(force = false) {
   console.log("Checking if database needs seeding...\n");
 
   // Check if we already have any users (primary check for seeding)
   const existingUsers = await prisma.user.count();
-  if (existingUsers > 0) {
+  if (!force && existingUsers > 0) {
     console.log(`✅ Database already has ${existingUsers} users. Skipping seed.`);
     return;
   }
