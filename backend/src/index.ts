@@ -1,14 +1,34 @@
 import app from "./app";
 import { env } from "./config/env";
 import prisma from "./lib/prisma";
+import { main as seedDatabase } from "../prisma/seed-minimal";
 
 const PORT = env.PORT;
 const HOST = "0.0.0.0";
 
-const server = app.listen(PORT, HOST, () => {
+async function ensureDatabaseSeeded() {
+  try {
+    const userCount = await prisma.user.count();
+    if (userCount === 0) {
+      console.log("🌱 Database is empty. Running auto-seed...");
+      await seedDatabase();
+      console.log("✅ Auto-seed completed successfully.");
+    } else {
+      console.log(`✅ Database already has ${userCount} users. Skipping auto-seed.`);
+    }
+  } catch (error) {
+    console.error("❌ Auto-seed failed:", error);
+    // Don't fail startup if seeding fails - let the server start anyway
+  }
+}
+
+const server = app.listen(PORT, HOST, async () => {
   console.log(`RetailMind API running on http://${HOST}:${PORT}`);
   console.log(`Environment: ${env.NODE_ENV}`);
   console.log(`Health check: http://${HOST}:${PORT}/api/health`);
+  
+  // Auto-seed database if empty
+  await ensureDatabaseSeeded();
 });
 
 function gracefulShutdown(signal: string) {
