@@ -14,12 +14,14 @@ export async function seedDatabase(force = false) {
 
   // Check if we already have any users (primary check for seeding)
   const existingUsers = await prisma.user.count();
-  if (!force && existingUsers > 0) {
-    console.log(`✅ Database already has ${existingUsers} users. Skipping seed.`);
+  const existingProducts = await prisma.product.count();
+  
+  if (!force && existingUsers > 0 && existingProducts > 0) {
+    console.log(`✅ Database already has ${existingUsers} users and ${existingProducts} products. Skipping seed.`);
     return;
   }
 
-  console.log("Database is empty. Running minimal seed...\n");
+  console.log("Database needs seeding. Running seed...\n");
 
   // ─── Roles ───────────────────────────────────────────────────────────────
   const roles = await Promise.all(
@@ -165,17 +167,23 @@ export async function seedDatabase(force = false) {
 
   const products = [];
   for (const p of productDefs) {
-    const existing = await prisma.product.findFirst({
-      where: { sku: p.sku, deletedAt: null }
-    });
-    
-    if (existing) {
-      products.push(existing);
-      continue;
-    }
-
-    const product = await prisma.product.create({
-      data: {
+    const product = await prisma.product.upsert({
+      where: { sku: p.sku },
+      update: {
+        name: p.name,
+        barcode: p.barcode,
+        description: `${p.name} — retail product`,
+        categoryId: categories[p.category].id,
+        brandId: brands[p.brand].id,
+        costPrice: p.cost,
+        sellingPrice: p.price,
+        currentStock: p.stock,
+        minStock: p.min,
+        maxStock: p.stock * 3,
+        status: ProductStatus.ACTIVE,
+        deletedAt: null, // Restore if soft-deleted
+      },
+      create: {
         sku: p.sku,
         barcode: p.barcode,
         name: p.name,
@@ -192,8 +200,15 @@ export async function seedDatabase(force = false) {
       },
     });
 
-    await prisma.inventory.create({
-      data: {
+    // Ensure inventory record exists
+    await prisma.inventory.upsert({
+      where: { productId: product.id },
+      update: {
+        quantity: p.stock,
+        location: "Main Store",
+        lastRestockedAt: new Date(),
+      },
+      create: {
         productId: product.id,
         quantity: p.stock,
         location: "Main Store",
