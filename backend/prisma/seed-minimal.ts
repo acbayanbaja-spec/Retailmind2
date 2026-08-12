@@ -16,10 +16,10 @@ async function hashPassword(password: string): Promise<string> {
 export async function main() {
   console.log("Checking if database needs seeding...\n");
 
-  // Check if we already have any products
-  const existingProducts = await prisma.product.count();
-  if (existingProducts > 0) {
-    console.log(`✅ Database already has ${existingProducts} products. Skipping seed.`);
+  // Check if we already have any users (primary check for seeding)
+  const existingUsers = await prisma.user.count();
+  if (existingUsers > 0) {
+    console.log(`✅ Database already has ${existingUsers} users. Skipping seed.`);
     return;
   }
 
