@@ -6,7 +6,7 @@ import { productIdParamSchema } from "../validators/product.validator";
 export const productController = {
   async list(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await productService.list(req.query as never);
+      const result = await productService.list(req.query as any);
       sendPaginated(res, result.items, result.pagination);
     } catch (err) {
       next(err);

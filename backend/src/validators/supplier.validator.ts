@@ -1,13 +1,10 @@
 import { z } from "zod";
 
 export const listSuppliersQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
+  page: z.string().optional().transform((v) => v ? Number(v) : undefined),
+  limit: z.string().optional().transform((v) => v ? Number(v) : undefined),
   search: z.string().trim().optional(),
-  isActive: z
-    .enum(["true", "false"])
-    .optional()
-    .transform((v) => v === "true"),
+  isActive: z.string().optional().transform((v) => v === "true"),
 });
 
 export type ListSuppliersQuery = z.infer<typeof listSuppliersQuerySchema>;

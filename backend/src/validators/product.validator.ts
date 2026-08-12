@@ -2,15 +2,12 @@ import { ProductStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const listProductsQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
+  page: z.string().optional().transform((v) => v ? Number(v) : undefined),
+  limit: z.string().optional().transform((v) => v ? Number(v) : undefined),
   search: z.string().trim().optional(),
-  categoryId: z.string().uuid().optional(),
-  status: z.nativeEnum(ProductStatus).optional(),
-  lowStock: z
-    .enum(["true", "false"])
-    .optional()
-    .transform((v) => v === "true"),
+  categoryId: z.string().optional(),
+  status: z.string().optional(),
+  lowStock: z.string().optional().transform((v) => v === "true"),
 });
 
 export type ListProductsQuery = z.infer<typeof listProductsQuerySchema>;

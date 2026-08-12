@@ -11,7 +11,7 @@ import {
 const router = Router();
 
 // Public read-only endpoints for supplier catalog
-router.get("/", supplierController.list);
+router.get("/", validateQuery(listSuppliersQuerySchema), supplierController.list);
 router.get("/:id", supplierController.getById);
 
 // All other endpoints require authentication
