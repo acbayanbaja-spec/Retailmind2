@@ -309,10 +309,8 @@ export async function seedDatabase(force = false) {
 
   const expenses = [];
   for (const e of expenseDefs) {
-    const expense = await prisma.expense.upsert({
-      where: { id: "" }, // Use create since we don't have unique IDs
-      update: {},
-      create: {
+    const expense = await prisma.expense.create({
+      data: {
         categoryId: expenseCategories[e.categoryId].id,
         amount: e.amount,
         description: e.description,
@@ -334,10 +332,8 @@ export async function seedDatabase(force = false) {
 
   const purchaseOrders = [];
   for (const po of poDefs) {
-    const purchaseOrder = await prisma.purchaseOrder.upsert({
-      where: { id: "" },
-      update: {},
-      create: {
+    const purchaseOrder = await prisma.purchaseOrder.create({
+      data: {
         supplierId: suppliers[po.supplierId].id,
         status: po.status as any,
         orderDate: po.orderDate,
@@ -365,10 +361,8 @@ export async function seedDatabase(force = false) {
 
   const sales = [];
   for (const s of saleDefs) {
-    const sale = await prisma.sale.upsert({
-      where: { id: "" },
-      update: {},
-      create: {
+    const sale = await prisma.sale.create({
+      data: {
         customerId: customers[s.customerId].id,
         totalAmount: s.totalAmount,
         status: s.status as any,
@@ -397,6 +391,88 @@ export async function seedDatabase(force = false) {
     });
   }
 
+  // ─── Additional Products to reach higher count ───────────────────────────
+  const additionalProductDefs = [
+    { sku: "BEV-002", barcode: "4800123456006", name: "Cola 330ml", category: 0, brand: 0, cost: 12, price: 25, stock: 150, min: 40 },
+    { sku: "BEV-003", barcode: "4800123456007", name: "Orange Juice 250ml", category: 0, brand: 0, cost: 18, price: 35, stock: 100, min: 30 },
+    { sku: "SNK-002", barcode: "4800123456008", name: "Chocolate Bar 50g", category: 1, brand: 0, cost: 25, price: 45, stock: 200, min: 50 },
+    { sku: "SNK-003", barcode: "4800123456009", name: "Cookies 100g", category: 1, brand: 0, cost: 20, price: 40, stock: 180, min: 45 },
+    { sku: "PC-002", barcode: "4800123456010", name: "Toothpaste 100g", category: 2, brand: 1, cost: 45, price: 75, stock: 80, min: 20 },
+    { sku: "PC-003", barcode: "4800123456011", name: "Soap Bar 90g", category: 2, brand: 1, cost: 15, price: 30, stock: 120, min: 30 },
+    { sku: "HH-002", barcode: "4800123456012", name: "Laundry Detergent 1kg", category: 3, brand: 1, cost: 120, price: 180, stock: 60, min: 15 },
+    { sku: "HH-003", barcode: "4800123456013", name: "Floor Cleaner 500ml", category: 3, brand: 1, cost: 45, price: 85, stock: 90, min: 25 },
+    { sku: "ELC-002", barcode: "4800123456014", name: "Phone Charger", category: 4, brand: 4, cost: 150, price: 299, stock: 40, min: 10 },
+    { sku: "ELC-003", barcode: "4800123456015", name: "Earbuds", category: 4, brand: 4, cost: 200, price: 450, stock: 30, min: 8 },
+  ];
+
+  for (const p of additionalProductDefs) {
+    const product = await prisma.product.create({
+      data: {
+        sku: p.sku,
+        barcode: p.barcode,
+        name: p.name,
+        description: `${p.name} — retail product`,
+        categoryId: categories[p.category].id,
+        brandId: brands[p.brand].id,
+        supplierId: null,
+        costPrice: p.cost,
+        sellingPrice: p.price,
+        currentStock: p.stock,
+        minStock: p.min,
+        maxStock: p.stock * 3,
+        status: ProductStatus.ACTIVE,
+      },
+    });
+
+    await prisma.inventory.create({
+      data: {
+        productId: product.id,
+        quantity: p.stock,
+        location: "Main Store",
+        lastRestockedAt: new Date(),
+      },
+    });
+    products.push(product);
+  }
+
+  // ─── Additional Customers to reach higher count ───────────────────────────
+  const additionalCustomerDefs = [
+    { firstName: "Roberto", lastName: "Martinez", email: "roberto.martinez@email.com", phone: "+63 917 000 1011", address: "852 Oak St", city: "Manila", level: "BRONZE" },
+    { firstName: "Carmen", lastName: "Lopez", email: "carmen.lopez@email.com", phone: "+63 917 000 1012", address: "963 Pine Ave", city: "Cebu", level: "SILVER" },
+    { firstName: "Ricardo", lastName: "Gonzalez", email: "ricardo.gonzalez@email.com", phone: "+63 917 000 1013", address: "174 Elm Dr", city: "Davao", level: "GOLD" },
+    { firstName: "Patricia", lastName: "Wilson", email: "patricia.wilson@email.com", phone: "+63 917 000 1014", address: "285 Maple Way", city: "Quezon City", level: "BRONZE" },
+    { firstName: "Francisco", lastName: "Anderson", email: "francisco.anderson@email.com", phone: "+63 917 000 1015", address: "396 Cedar Ln", city: "Makati", level: "SILVER" },
+  ];
+
+  for (const c of additionalCustomerDefs) {
+    const customer = await prisma.customer.create({
+      data: { ...c, isActive: true },
+    });
+    customers.push(customer);
+  }
+
+  // ─── Additional Sales to reach higher count ───────────────────────────────
+  const additionalSaleDefs = [
+    { customerId: 10, totalAmount: 175, status: "COMPLETED", saleDate: new Date("2026-07-11T16:45:00") },
+    { customerId: 11, totalAmount: 340, status: "COMPLETED", saleDate: new Date("2026-07-12T09:30:00") },
+    { customerId: 12, totalAmount: 510, status: "COMPLETED", saleDate: new Date("2026-07-13T14:20:00") },
+    { customerId: 13, totalAmount: 230, status: "COMPLETED", saleDate: new Date("2026-07-14T11:15:00") },
+    { customerId: 14, totalAmount: 480, status: "COMPLETED", saleDate: new Date("2026-07-15T15:00:00") },
+  ];
+
+  for (const s of additionalSaleDefs) {
+    const sale = await prisma.sale.create({
+      data: {
+        customerId: customers[s.customerId].id,
+        totalAmount: s.totalAmount,
+        status: s.status as any,
+        saleDate: s.saleDate,
+        cashierId: cashier.id,
+      },
+    });
+    sales.push(sale);
+  }
+
   console.log("✅ Expanded seed completed successfully.\n");
   console.log("─── PRODUCTION CREDENTIALS ───");
   console.log(`Password for all users: ${PROD_PASSWORD}`);
@@ -411,12 +487,12 @@ export async function seedDatabase(force = false) {
   console.log(`Permissions: ${allPermissionIds.length}`);
   console.log(`Categories: ${categories.length}`);
   console.log(`Brands: ${brands.length}`);
-  console.log(`Products: ${products.length}`);
+  console.log(`Products: ${products.length} (15 total)`);
   console.log(`Suppliers: ${suppliers.length}`);
-  console.log(`Customers: ${customers.length}`);
+  console.log(`Customers: ${customers.length} (15 total)`);
   console.log(`Expense Categories: ${expenseCategories.length}`);
   console.log(`Expenses: ${expenses.length}`);
   console.log(`Purchase Orders: ${purchaseOrders.length}`);
-  console.log(`Sales: ${sales.length}`);
+  console.log(`Sales: ${sales.length} (15 total)`);
   console.log(`Activity Logs: ${activityDefs.length}\n`);
 }
