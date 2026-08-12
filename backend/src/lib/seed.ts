@@ -241,6 +241,11 @@ export async function seedDatabase(force = false) {
     { name: "Philippine Traders", contactPerson: "Pedro Santos", email: "pedro@ptraders.com", phone: "+63 917 000 0300", address: "789 Davao Blvd", city: "Davao" },
     { name: "Metro Logistics", contactPerson: "Maria Reyes", email: "maria@metro.com", phone: "+63 917 000 0400", address: "321 Quezon Ave", city: "Quezon City" },
     { name: "Island Trading", contactPerson: "Carlos Garcia", email: "carlos@island.com", phone: "+63 917 000 0500", address: "654 Makati Ave", city: "Makati" },
+    { name: "Pacific Wholesalers", contactPerson: "Anna Lee", email: "anna@pacific.com", phone: "+63 917 000 0600", address: "987 Pasay Rd", city: "Pasay" },
+    { name: "Asian Importers", contactPerson: "Kim Tan", email: "kim@asian.com", phone: "+63 917 000 0700", address: "654 Taguig St", city: "Taguig" },
+    { name: "City Merchants", contactPerson: "Rob Cruz", email: "rob@city.com", phone: "+63 917 000 0800", address: "321 Parañaque Ave", city: "Parañaque" },
+    { name: "National Suppliers", contactPerson: "Luis Ramos", email: "luis@national.com", phone: "+63 917 000 0900", address: "147 Caloocan Blvd", city: "Caloocan" },
+    { name: "Regional Distributors", contactPerson: "Grace Mendoza", email: "grace@regional.com", phone: "+63 917 000 1000", address: "258 Valenzuela St", city: "Valenzuela" },
   ];
 
   const suppliers = [];
@@ -284,6 +289,9 @@ export async function seedDatabase(force = false) {
     { name: "Salaries", description: "Employee salaries" },
     { name: "Supplies", description: "Office supplies" },
     { name: "Marketing", description: "Advertising and promotions" },
+    { name: "Maintenance", description: "Equipment maintenance" },
+    { name: "Insurance", description: "Business insurance" },
+    { name: "Shipping", description: "Shipping and delivery" },
   ];
 
   const expenseCategories = [];
@@ -305,6 +313,14 @@ export async function seedDatabase(force = false) {
     { categoryId: 0, amount: 4800, description: "Water bill - July", date: new Date("2026-07-15") },
     { categoryId: 3, amount: 2200, description: "Packaging materials", date: new Date("2026-07-25") },
     { categoryId: 4, amount: 5000, description: "Flyer printing", date: new Date("2026-07-18") },
+    { categoryId: 5, amount: 3500, description: "AC maintenance", date: new Date("2026-07-12") },
+    { categoryId: 6, amount: 8000, description: "Insurance premium", date: new Date("2026-07-05") },
+    { categoryId: 7, amount: 4200, description: "Shipping costs", date: new Date("2026-07-22") },
+    { categoryId: 0, amount: 3200, description: "Internet bill", date: new Date("2026-07-28") },
+    { categoryId: 3, amount: 1800, description: "Receipt paper", date: new Date("2026-07-08") },
+    { categoryId: 4, amount: 6500, description: "Radio ads", date: new Date("2026-07-14") },
+    { categoryId: 5, amount: 2800, description: "Door repair", date: new Date("2026-07-19") },
+    { categoryId: 7, amount: 5100, description: "Delivery fees", date: new Date("2026-07-26") },
   ];
 
   const expenses = [];
@@ -328,6 +344,11 @@ export async function seedDatabase(force = false) {
     { supplierId: 2, status: "ORDERED", orderDate: new Date("2026-07-20"), expectedDate: new Date("2026-07-25"), totalAmount: 18000 },
     { supplierId: 3, status: "PENDING", orderDate: new Date("2026-07-25"), expectedDate: new Date("2026-07-30"), totalAmount: 12000 },
     { supplierId: 4, status: "RECEIVED", orderDate: new Date("2026-07-05"), expectedDate: new Date("2026-07-10"), totalAmount: 25000 },
+    { supplierId: 5, status: "RECEIVED", orderDate: new Date("2026-07-08"), expectedDate: new Date("2026-07-12"), totalAmount: 17000 },
+    { supplierId: 6, status: "ORDERED", orderDate: new Date("2026-07-22"), expectedDate: new Date("2026-07-27"), totalAmount: 19500 },
+    { supplierId: 7, status: "PENDING", orderDate: new Date("2026-07-26"), expectedDate: new Date("2026-07-31"), totalAmount: 14500 },
+    { supplierId: 8, status: "RECEIVED", orderDate: new Date("2026-07-03"), expectedDate: new Date("2026-07-08"), totalAmount: 21000 },
+    { supplierId: 9, status: "ORDERED", orderDate: new Date("2026-07-23"), expectedDate: new Date("2026-07-28"), totalAmount: 16500 },
   ];
 
   const purchaseOrders = [];
@@ -383,6 +404,14 @@ export async function seedDatabase(force = false) {
     { userId: admin.id, action: "CREATE", entityType: "expense", entityId: expenses[0].id, description: "Created expense for utilities" },
     { userId: manager.id, action: "UPDATE", entityType: "purchase_order", entityId: purchaseOrders[0].id, description: "Updated purchase order status" },
     { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[1].id, description: "Created sale for customer Jose Reyes" },
+    { userId: admin.id, action: "CREATE", entityType: "product", entityId: products[5].id, description: "Created product Cola" },
+    { userId: manager.id, action: "UPDATE", entityType: "customer", entityId: customers[5].id, description: "Updated customer Roberto Martinez" },
+    { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[5].id, description: "Created sale for customer Carmen Lopez" },
+    { userId: admin.id, action: "CREATE", entityType: "supplier", entityId: suppliers[5].id, description: "Created supplier Pacific Wholesalers" },
+    { userId: manager.id, action: "CREATE", entityType: "expense", entityId: expenses[8].id, description: "Created expense for maintenance" },
+    { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[10].id, description: "Created sale for customer Laura Thomas" },
+    { userId: admin.id, action: "UPDATE", entityType: "purchase_order", entityId: purchaseOrders[5].id, description: "Updated purchase order to received" },
+    { userId: manager.id, action: "CREATE", entityType: "product", entityId: products[10].id, description: "Created product Toothpaste" },
   ];
 
   for (const a of activityDefs) {
@@ -395,14 +424,29 @@ export async function seedDatabase(force = false) {
   const additionalProductDefs = [
     { sku: "BEV-002", barcode: "4800123456006", name: "Cola 330ml", category: 0, brand: 0, cost: 12, price: 25, stock: 150, min: 40 },
     { sku: "BEV-003", barcode: "4800123456007", name: "Orange Juice 250ml", category: 0, brand: 0, cost: 18, price: 35, stock: 100, min: 30 },
+    { sku: "BEV-004", barcode: "4800123456016", name: "Energy Drink 250ml", category: 0, brand: 0, cost: 25, price: 50, stock: 80, min: 20 },
+    { sku: "BEV-005", barcode: "4800123456017", name: "Coffee 200ml", category: 0, brand: 0, cost: 15, price: 35, stock: 120, min: 30 },
+    { sku: "BEV-006", barcode: "4800123456018", name: "Green Tea 500ml", category: 0, brand: 0, cost: 10, price: 22, stock: 90, min: 25 },
     { sku: "SNK-002", barcode: "4800123456008", name: "Chocolate Bar 50g", category: 1, brand: 0, cost: 25, price: 45, stock: 200, min: 50 },
     { sku: "SNK-003", barcode: "4800123456009", name: "Cookies 100g", category: 1, brand: 0, cost: 20, price: 40, stock: 180, min: 45 },
+    { sku: "SNK-004", barcode: "4800123456019", name: "Chips 75g", category: 1, brand: 0, cost: 18, price: 38, stock: 150, min: 40 },
+    { sku: "SNK-005", barcode: "4800123456020", name: "Candy 50g", category: 1, brand: 0, cost: 8, price: 18, stock: 250, min: 60 },
+    { sku: "SNK-006", barcode: "4800123456021", name: "Nuts 100g", category: 1, brand: 0, cost: 30, price: 55, stock: 100, min: 25 },
     { sku: "PC-002", barcode: "4800123456010", name: "Toothpaste 100g", category: 2, brand: 1, cost: 45, price: 75, stock: 80, min: 20 },
     { sku: "PC-003", barcode: "4800123456011", name: "Soap Bar 90g", category: 2, brand: 1, cost: 15, price: 30, stock: 120, min: 30 },
+    { sku: "PC-004", barcode: "4800123456022", name: "Shower Gel 250ml", category: 2, brand: 1, cost: 35, price: 65, stock: 70, min: 18 },
+    { sku: "PC-005", barcode: "4800123456023", name: "Lotion 200ml", category: 2, brand: 1, cost: 40, price: 80, stock: 60, min: 15 },
+    { sku: "PC-006", barcode: "4800123456024", name: "Deodorant 50ml", category: 2, brand: 1, cost: 50, price: 95, stock: 50, min: 12 },
     { sku: "HH-002", barcode: "4800123456012", name: "Laundry Detergent 1kg", category: 3, brand: 1, cost: 120, price: 180, stock: 60, min: 15 },
     { sku: "HH-003", barcode: "4800123456013", name: "Floor Cleaner 500ml", category: 3, brand: 1, cost: 45, price: 85, stock: 90, min: 25 },
+    { sku: "HH-004", barcode: "4800123456025", name: "Dish Soap 750ml", category: 3, brand: 1, cost: 55, price: 95, stock: 75, min: 20 },
+    { sku: "HH-005", barcode: "4800123456026", name: "Glass Cleaner 500ml", category: 3, brand: 1, cost: 40, price: 75, stock: 65, min: 18 },
+    { sku: "HH-006", barcode: "4800123456027", name: "Bleach 1L", category: 3, brand: 1, cost: 35, price: 65, stock: 85, min: 22 },
     { sku: "ELC-002", barcode: "4800123456014", name: "Phone Charger", category: 4, brand: 4, cost: 150, price: 299, stock: 40, min: 10 },
     { sku: "ELC-003", barcode: "4800123456015", name: "Earbuds", category: 4, brand: 4, cost: 200, price: 450, stock: 30, min: 8 },
+    { sku: "ELC-004", barcode: "4800123456028", name: "Power Bank 10000mAh", category: 4, brand: 4, cost: 350, price: 699, stock: 25, min: 6 },
+    { sku: "ELC-005", barcode: "4800123456029", name: "USB Hub 4-Port", category: 4, brand: 4, cost: 80, price: 159, stock: 45, min: 12 },
+    { sku: "ELC-006", barcode: "4800123456030", name: "Mouse Wireless", category: 4, brand: 4, cost: 120, price: 249, stock: 35, min: 9 },
   ];
 
   for (const p of additionalProductDefs) {
@@ -442,6 +486,21 @@ export async function seedDatabase(force = false) {
     { firstName: "Ricardo", lastName: "Gonzalez", email: "ricardo.gonzalez@email.com", phone: "+63 917 000 1013", address: "174 Elm Dr", city: "Davao", level: "GOLD" },
     { firstName: "Patricia", lastName: "Wilson", email: "patricia.wilson@email.com", phone: "+63 917 000 1014", address: "285 Maple Way", city: "Quezon City", level: "BRONZE" },
     { firstName: "Francisco", lastName: "Anderson", email: "francisco.anderson@email.com", phone: "+63 917 000 1015", address: "396 Cedar Ln", city: "Makati", level: "SILVER" },
+    { firstName: "Laura", lastName: "Thomas", email: "laura.thomas@email.com", phone: "+63 917 000 1016", address: "417 Birch St", city: "Manila", level: "GOLD" },
+    { firstName: "Daniel", lastName: "Jackson", email: "daniel.jackson@email.com", phone: "+63 917 000 1017", address: "528 Spruce Ave", city: "Cebu", level: "BRONZE" },
+    { firstName: "Michelle", lastName: "White", email: "michelle.white@email.com", phone: "+63 917 000 1018", address: "639 Oak Dr", city: "Davao", level: "SILVER" },
+    { firstName: "David", lastName: "Harris", email: "david.harris@email.com", phone: "+63 917 000 1019", address: "741 Pine Way", city: "Quezon City", level: "GOLD" },
+    { firstName: "Sarah", lastName: "Martin", email: "sarah.martin@email.com", phone: "+63 917 000 1020", address: "852 Elm Ln", city: "Makati", level: "BRONZE" },
+    { firstName: "James", lastName: "Garcia", email: "james.garcia@email.com", phone: "+63 917 000 1021", address: "963 Maple St", city: "Manila", level: "SILVER" },
+    { firstName: "Jennifer", lastName: "Rodriguez", email: "jennifer.rodriguez@email.com", phone: "+63 917 000 1022", address: "174 Cedar Ave", city: "Cebu", level: "GOLD" },
+    { firstName: "Robert", lastName: "Lewis", email: "robert.lewis@email.com", phone: "+63 917 000 1023", address: "285 Birch Dr", city: "Davao", level: "BRONZE" },
+    { firstName: "Lisa", lastName: "Lee", email: "lisa.lee@email.com", phone: "+63 917 000 1024", address: "396 Spruce Way", city: "Quezon City", level: "SILVER" },
+    { firstName: "Michael", lastName: "Walker", email: "michael.walker@email.com", phone: "+63 917 000 1025", address: "417 Oak Ln", city: "Makati", level: "GOLD" },
+    { firstName: "Emily", lastName: "Hall", email: "emily.hall@email.com", phone: "+63 917 000 1026", address: "528 Pine St", city: "Manila", level: "BRONZE" },
+    { firstName: "William", lastName: "Young", email: "william.young@email.com", phone: "+63 917 000 1027", address: "639 Elm Ave", city: "Cebu", level: "SILVER" },
+    { firstName: "Ashley", lastName: "King", email: "ashley.king@email.com", phone: "+63 917 000 1028", address: "741 Maple Dr", city: "Davao", level: "GOLD" },
+    { firstName: "Christopher", lastName: "Wright", email: "christopher.wright@email.com", phone: "+63 917 000 1029", address: "852 Cedar Way", city: "Quezon City", level: "BRONZE" },
+    { firstName: "Jessica", lastName: "Scott", email: "jessica.scott@email.com", phone: "+63 917 000 1030", address: "963 Birch Ln", city: "Makati", level: "SILVER" },
   ];
 
   for (const c of additionalCustomerDefs) {
@@ -458,6 +517,21 @@ export async function seedDatabase(force = false) {
     { customerId: 12, totalAmount: 510, status: "COMPLETED", saleDate: new Date("2026-07-13T14:20:00") },
     { customerId: 13, totalAmount: 230, status: "COMPLETED", saleDate: new Date("2026-07-14T11:15:00") },
     { customerId: 14, totalAmount: 480, status: "COMPLETED", saleDate: new Date("2026-07-15T15:00:00") },
+    { customerId: 15, totalAmount: 295, status: "COMPLETED", saleDate: new Date("2026-07-16T10:30:00") },
+    { customerId: 16, totalAmount: 420, status: "COMPLETED", saleDate: new Date("2026-07-17T13:45:00") },
+    { customerId: 17, totalAmount: 185, status: "COMPLETED", saleDate: new Date("2026-07-18T09:15:00") },
+    { customerId: 18, totalAmount: 550, status: "COMPLETED", saleDate: new Date("2026-07-19T14:30:00") },
+    { customerId: 19, totalAmount: 310, status: "COMPLETED", saleDate: new Date("2026-07-20T11:00:00") },
+    { customerId: 20, totalAmount: 245, status: "COMPLETED", saleDate: new Date("2026-07-21T16:20:00") },
+    { customerId: 21, totalAmount: 380, status: "COMPLETED", saleDate: new Date("2026-07-22T10:45:00") },
+    { customerId: 22, totalAmount: 490, status: "COMPLETED", saleDate: new Date("2026-07-23T13:15:00") },
+    { customerId: 23, totalAmount: 165, status: "COMPLETED", saleDate: new Date("2026-07-24T09:00:00") },
+    { customerId: 24, totalAmount: 525, status: "COMPLETED", saleDate: new Date("2026-07-25T14:45:00") },
+    { customerId: 25, totalAmount: 275, status: "COMPLETED", saleDate: new Date("2026-07-26T11:30:00") },
+    { customerId: 26, totalAmount: 400, status: "COMPLETED", saleDate: new Date("2026-07-27T16:00:00") },
+    { customerId: 27, totalAmount: 335, status: "COMPLETED", saleDate: new Date("2026-07-28T10:15:00") },
+    { customerId: 28, totalAmount: 460, status: "COMPLETED", saleDate: new Date("2026-07-29T13:30:00") },
+    { customerId: 29, totalAmount: 195, status: "COMPLETED", saleDate: new Date("2026-07-30T09:45:00") },
   ];
 
   for (const s of additionalSaleDefs) {
@@ -487,12 +561,12 @@ export async function seedDatabase(force = false) {
   console.log(`Permissions: ${allPermissionIds.length}`);
   console.log(`Categories: ${categories.length}`);
   console.log(`Brands: ${brands.length}`);
-  console.log(`Products: ${products.length} (15 total)`);
-  console.log(`Suppliers: ${suppliers.length}`);
-  console.log(`Customers: ${customers.length} (15 total)`);
-  console.log(`Expense Categories: ${expenseCategories.length}`);
-  console.log(`Expenses: ${expenses.length}`);
-  console.log(`Purchase Orders: ${purchaseOrders.length}`);
-  console.log(`Sales: ${sales.length} (15 total)`);
-  console.log(`Activity Logs: ${activityDefs.length}\n`);
+  console.log(`Products: ${products.length} (30 total)`);
+  console.log(`Suppliers: ${suppliers.length} (10 total)`);
+  console.log(`Customers: ${customers.length} (30 total)`);
+  console.log(`Expense Categories: ${expenseCategories.length} (8 total)`);
+  console.log(`Expenses: ${expenses.length} (16 total)`);
+  console.log(`Purchase Orders: ${purchaseOrders.length} (10 total)`);
+  console.log(`Sales: ${sales.length} (30 total)`);
+  console.log(`Activity Logs: ${activityDefs.length} (16 total)\n`);
 }
