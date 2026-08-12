@@ -199,7 +199,7 @@ export const purchaseOrderService = {
     const { page, limit, skip } = parsePagination(query);
     const where: Prisma.PurchaseOrderWhereInput = {
       deletedAt: null,
-      ...(query.status ? { status: query.status } : {}),
+      ...(query.status ? { status: query.status as any } : {}),
       ...(query.supplierId ? { supplierId: query.supplierId } : {}),
       ...(query.search
         ? {

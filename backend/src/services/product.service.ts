@@ -82,7 +82,7 @@ export const productService = {
     const { page, limit, skip } = parsePagination(query);
     const where: Prisma.ProductWhereInput = {
       deletedAt: null,
-      ...(query.status ? { status: query.status } : {}),
+      ...(query.status ? { status: query.status as any } : {}),
       ...(query.categoryId ? { categoryId: query.categoryId } : {}),
       ...(query.search
         ? {

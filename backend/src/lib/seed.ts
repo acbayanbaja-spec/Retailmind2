@@ -1,4 +1,4 @@
-import { PrismaClient, UserRoleName, ProductStatus } from "@prisma/client";
+import { PrismaClient, UserRoleName, ProductStatus, ActivityAction } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -30,10 +30,8 @@ export async function seedDatabase(force = false) {
       { name: UserRoleName.STORE_MANAGER, description: "Store operations and reporting" },
       { name: UserRoleName.CASHIER, description: "POS and daily transactions" },
     ].map((role) =>
-      prisma.role.upsert({
-        where: { name: role.name },
-        update: {},
-        create: role,
+      prisma.role.create({
+        data: role,
       })
     )
   );
@@ -57,10 +55,8 @@ export async function seedDatabase(force = false) {
 
   const permissions = await Promise.all(
     permissionDefs.map((p) =>
-      prisma.permission.upsert({
-        where: { name: p.name },
-        update: {},
-        create: p,
+      prisma.permission.create({
+        data: p,
       })
     )
   );
@@ -94,10 +90,8 @@ export async function seedDatabase(force = false) {
   // ─── Users ───────────────────────────────────────────────────────────────
   const passwordHash = await hashPassword(PROD_PASSWORD);
 
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@retailmind.dev" },
-    update: {},
-    create: {
+  const admin = await prisma.user.create({
+    data: {
       email: "admin@retailmind.dev",
       passwordHash,
       firstName: "Alex",
@@ -107,10 +101,8 @@ export async function seedDatabase(force = false) {
     },
   });
 
-  const manager = await prisma.user.upsert({
-    where: { email: "manager@retailmind.dev" },
-    update: {},
-    create: {
+  const manager = await prisma.user.create({
+    data: {
       email: "manager@retailmind.dev",
       passwordHash,
       firstName: "Maria",
@@ -120,10 +112,8 @@ export async function seedDatabase(force = false) {
     },
   });
 
-  const cashier = await prisma.user.upsert({
-    where: { email: "cashier@retailmind.dev" },
-    update: {},
-    create: {
+  const cashier = await prisma.user.create({
+    data: {
       email: "cashier@retailmind.dev",
       passwordHash,
       firstName: "Juan",
@@ -137,10 +127,8 @@ export async function seedDatabase(force = false) {
   const categories = await Promise.all(
     ["Beverages", "Snacks", "Personal Care", "Household", "Electronics"].map(
       (name) =>
-        prisma.category.upsert({
-          where: { name },
-          update: {},
-          create: { name, description: `${name} category` },
+        prisma.category.create({
+          data: { name, description: `${name} category` },
         })
     )
   );
@@ -148,10 +136,8 @@ export async function seedDatabase(force = false) {
   const brands = await Promise.all(
     ["Nestlé", "Unilever", "San Miguel", "Procter & Gamble", "Samsung"].map(
       (name) =>
-        prisma.brand.upsert({
-          where: { name },
-          update: {},
-          create: { name },
+        prisma.brand.create({
+          data: { name },
         })
     )
   );
@@ -167,23 +153,8 @@ export async function seedDatabase(force = false) {
 
   const products = [];
   for (const p of productDefs) {
-    const product = await prisma.product.upsert({
-      where: { sku: p.sku },
-      update: {
-        name: p.name,
-        barcode: p.barcode,
-        description: `${p.name} — retail product`,
-        categoryId: categories[p.category].id,
-        brandId: brands[p.brand].id,
-        costPrice: p.cost,
-        sellingPrice: p.price,
-        currentStock: p.stock,
-        minStock: p.min,
-        maxStock: p.stock * 3,
-        status: ProductStatus.ACTIVE,
-        deletedAt: null, // Restore if soft-deleted
-      },
-      create: {
+    const product = await prisma.product.create({
+      data: {
         sku: p.sku,
         barcode: p.barcode,
         name: p.name,
@@ -200,15 +171,8 @@ export async function seedDatabase(force = false) {
       },
     });
 
-    // Ensure inventory record exists
-    await prisma.inventory.upsert({
-      where: { productId: product.id },
-      update: {
-        quantity: p.stock,
-        location: "Main Store",
-        lastRestockedAt: new Date(),
-      },
-      create: {
+    await prisma.inventory.create({
+      data: {
         productId: product.id,
         quantity: p.stock,
         location: "Main Store",
@@ -227,10 +191,8 @@ export async function seedDatabase(force = false) {
   ];
 
   for (const s of settings) {
-    await prisma.setting.upsert({
-      where: { key: s.key },
-      update: { value: s.value },
-      create: s,
+    await prisma.setting.create({
+      data: s,
     });
   }
 
@@ -250,10 +212,8 @@ export async function seedDatabase(force = false) {
 
   const suppliers = [];
   for (const s of supplierDefs) {
-    const supplier = await prisma.supplier.upsert({
-      where: { name: s.name },
-      update: { deletedAt: null, isActive: true },
-      create: { ...s, isActive: true },
+    const supplier = await prisma.supplier.create({
+      data: { ...s, isActive: true },
     });
     suppliers.push(supplier);
   }
@@ -274,10 +234,8 @@ export async function seedDatabase(force = false) {
 
   const customers = [];
   for (const c of customerDefs) {
-    const customer = await prisma.customer.upsert({
-      where: { email: c.email },
-      update: { deletedAt: null, isActive: true },
-      create: { ...c, isActive: true },
+    const customer = await prisma.customer.create({
+      data: { ...c, isActive: true, level: c.level as any },
     });
     customers.push(customer);
   }
@@ -296,10 +254,8 @@ export async function seedDatabase(force = false) {
 
   const expenseCategories = [];
   for (const ec of expenseCategoryDefs) {
-    const category = await prisma.expenseCategory.upsert({
-      where: { name: ec.name },
-      update: { deletedAt: null, isActive: true },
-      create: { ...ec, isActive: true },
+    const category = await prisma.expenseCategory.create({
+      data: { ...ec, isActive: true },
     });
     expenseCategories.push(category);
   }
@@ -330,7 +286,7 @@ export async function seedDatabase(force = false) {
         categoryId: expenseCategories[e.categoryId].id,
         amount: e.amount,
         description: e.description,
-        date: e.date,
+        expenseDate: e.date.toISOString().split('T')[0],
         performedById: admin.id,
       },
     });
@@ -357,7 +313,7 @@ export async function seedDatabase(force = false) {
       data: {
         supplierId: suppliers[po.supplierId].id,
         status: po.status as any,
-        orderDate: po.orderDate,
+        orderedAt: po.orderDate,
         expectedDate: po.expectedDate,
         totalAmount: po.totalAmount,
         createdById: admin.id,
@@ -387,7 +343,7 @@ export async function seedDatabase(force = false) {
         customerId: customers[s.customerId].id,
         totalAmount: s.totalAmount,
         status: s.status as any,
-        saleDate: s.saleDate,
+        transactionDate: s.saleDate,
         cashierId: cashier.id,
       },
     });
@@ -396,22 +352,22 @@ export async function seedDatabase(force = false) {
 
   // ─── Activity Logs (Audit Logs) ───────────────────────────────────────────
   const activityDefs = [
-    { userId: admin.id, action: "CREATE", entityType: "product", entityId: products[0].id, description: "Created product Bottled Water" },
-    { userId: manager.id, action: "UPDATE", entityType: "product", entityId: products[1].id, description: "Updated product Potato Chips" },
-    { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[0].id, description: "Created sale for customer Ana Santos" },
-    { userId: admin.id, action: "CREATE", entityType: "supplier", entityId: suppliers[0].id, description: "Created supplier ABC Distributors" },
-    { userId: manager.id, action: "CREATE", entityType: "customer", entityId: customers[0].id, description: "Created customer Ana Santos" },
-    { userId: admin.id, action: "CREATE", entityType: "expense", entityId: expenses[0].id, description: "Created expense for utilities" },
-    { userId: manager.id, action: "UPDATE", entityType: "purchase_order", entityId: purchaseOrders[0].id, description: "Updated purchase order status" },
-    { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[1].id, description: "Created sale for customer Jose Reyes" },
-    { userId: admin.id, action: "CREATE", entityType: "product", entityId: products[5].id, description: "Created product Cola" },
-    { userId: manager.id, action: "UPDATE", entityType: "customer", entityId: customers[5].id, description: "Updated customer Roberto Martinez" },
-    { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[5].id, description: "Created sale for customer Carmen Lopez" },
-    { userId: admin.id, action: "CREATE", entityType: "supplier", entityId: suppliers[5].id, description: "Created supplier Pacific Wholesalers" },
-    { userId: manager.id, action: "CREATE", entityType: "expense", entityId: expenses[8].id, description: "Created expense for maintenance" },
-    { userId: cashier.id, action: "CREATE", entityType: "sale", entityId: sales[10].id, description: "Created sale for customer Laura Thomas" },
-    { userId: admin.id, action: "UPDATE", entityType: "purchase_order", entityId: purchaseOrders[5].id, description: "Updated purchase order to received" },
-    { userId: manager.id, action: "CREATE", entityType: "product", entityId: products[10].id, description: "Created product Toothpaste" },
+    { userId: admin.id, action: ActivityAction.CREATE, entityType: "product", entityId: products[0].id, description: "Created product Bottled Water" },
+    { userId: manager.id, action: ActivityAction.UPDATE, entityType: "product", entityId: products[1].id, description: "Updated product Potato Chips" },
+    { userId: cashier.id, action: ActivityAction.CREATE, entityType: "sale", entityId: sales[0].id, description: "Created sale for customer Ana Santos" },
+    { userId: admin.id, action: ActivityAction.CREATE, entityType: "supplier", entityId: suppliers[0].id, description: "Created supplier ABC Distributors" },
+    { userId: manager.id, action: ActivityAction.CREATE, entityType: "customer", entityId: customers[0].id, description: "Created customer Ana Santos" },
+    { userId: admin.id, action: ActivityAction.CREATE, entityType: "expense", entityId: expenses[0].id, description: "Created expense for utilities" },
+    { userId: manager.id, action: ActivityAction.UPDATE, entityType: "purchase_order", entityId: purchaseOrders[0].id, description: "Updated purchase order status" },
+    { userId: cashier.id, action: ActivityAction.CREATE, entityType: "sale", entityId: sales[1].id, description: "Created sale for customer Jose Reyes" },
+    { userId: admin.id, action: ActivityAction.CREATE, entityType: "product", entityId: products[5].id, description: "Created product Cola" },
+    { userId: manager.id, action: ActivityAction.UPDATE, entityType: "customer", entityId: customers[5].id, description: "Updated customer Roberto Martinez" },
+    { userId: cashier.id, action: ActivityAction.CREATE, entityType: "sale", entityId: sales[5].id, description: "Created sale for customer Carmen Lopez" },
+    { userId: admin.id, action: ActivityAction.CREATE, entityType: "supplier", entityId: suppliers[5].id, description: "Created supplier Pacific Wholesalers" },
+    { userId: manager.id, action: ActivityAction.CREATE, entityType: "expense", entityId: expenses[8].id, description: "Created expense for maintenance" },
+    { userId: cashier.id, action: ActivityAction.CREATE, entityType: "sale", entityId: sales[10].id, description: "Created sale for customer Laura Thomas" },
+    { userId: admin.id, action: ActivityAction.UPDATE, entityType: "purchase_order", entityId: purchaseOrders[5].id, description: "Updated purchase order to received" },
+    { userId: manager.id, action: ActivityAction.CREATE, entityType: "product", entityId: products[10].id, description: "Created product Toothpaste" },
   ];
 
   for (const a of activityDefs) {
@@ -540,7 +496,7 @@ export async function seedDatabase(force = false) {
         customerId: customers[s.customerId].id,
         totalAmount: s.totalAmount,
         status: s.status as any,
-        saleDate: s.saleDate,
+        transactionDate: s.saleDate,
         cashierId: cashier.id,
       },
     });
