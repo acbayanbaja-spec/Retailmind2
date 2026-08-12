@@ -11,11 +11,7 @@ import {
 const router = Router();
 
 // Public read-only endpoints for product catalog
-router.get(
-  "/",
-  validateQuery(listProductsQuerySchema),
-  productController.list
-);
+router.get("/", productController.list);
 router.get("/meta/categories", productController.listCategories);
 router.get("/meta/brands", productController.listBrands);
 router.get("/meta/suppliers", productController.listSuppliers);
